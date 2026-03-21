@@ -1,186 +1,188 @@
-// تشغيل التطبيق
-function startApp(){
-  document.querySelector(".hero").style.display="none";
-  document.querySelector(".about").style.display="none";
-  document.getElementById("app").style.display="block";
+* {
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
 }
 
-// زر الصفحة الرئيسية (يعمل في كل الحالات)
-document.getElementById("homeBtn").onclick = () => {
-  path = [];
-  document.getElementById("app").style.display = "none";
-  document.querySelector(".hero").style.display = "flex";
-  document.querySelector(".about").style.display = "block";
-  showMenu(data);
-};
-
-// الدروس
-function createLessons(){
-  return {
-    "درس استماع": {},
-    "درس قراءة 1": {},
-    "درس نحو 1": {},
-    "درس قواعد إملاء": {},
-    "درس موضوع تعبير": {},
-    "درس قراءة 2": {},
-    "درس نحو 2": {},
-    "درس تطبيق على القواعد الإملاء": {},
-    "درس تطبيق على موضوع التعبير": {},
-    "النص الشعري": {},
-    "مراجعة": {}
-  };
+body {
+  font-family:"Tajawal","Cairo";
 }
 
-function createUnits(){
-  return {
-    "الوحدة الأولى": createLessons(),
-    "الوحدة الثانية": createLessons(),
-    "الوحدة الثالثة": createLessons()
-  };
+/* HERO */
+.hero {
+  position:relative;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  color:#fff;
+  background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
 }
 
-const primary = {
-  "الصف الأول": createUnits(),
-  "الصف الثاني": createUnits(),
-  "الصف الثالث": createUnits(),
-  "الصف الرابع": createUnits(),
-  "الصف الخامس": createUnits(),
-  "الصف السادس": createUnits()
-};
+.overlay {
+  position:absolute;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.5);
+}
 
-const prep = {
-  "الصف الأول": createUnits(),
-  "الصف الثاني": createUnits(),
-  "الصف الثالث": createUnits()
-};
+.hero-content {
+  position:relative;
+  z-index:2;
+  max-width:420px;
+  padding:15px;
+  animation:fadeIn 1s ease;
+}
 
-// الأسئلة
-primary["الصف الرابع"]["الوحدة الأولى"]["مراجعة"] = [
-  {
-    question:"مضاد كلمة الوجود",
-    answers:["الحياة","البقاء","العدم"],
-    correct:2
-  },
-  {
-    question:"نوع الأسلوب في مصر انهضي",
-    answers:["أمر","استفهام","نفي"],
-    correct:0
+.profile-img {
+  width:150px;
+  height:150px;
+  border-radius:50%;
+  object-fit:cover;
+  border:4px solid #fff;
+  margin-bottom:15px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.4);
+}
+
+/* Typography */
+h1 {
+  font-size:clamp(24px,4vw,34px);
+  font-weight:800;
+}
+
+h2 {
+  color:#1e88e5;
+  margin-bottom:15px;
+  font-size:clamp(20px,3vw,26px);
+  font-weight: 800;
+}
+
+h3 {
+  font-size:clamp(18px,2.5vw,22px);
+  margin:10px 0;
+  color: #1a202c; /* لون داكن وواضح للسؤال */
+  font-weight: 700;
+}
+
+h4 {
+  color:#0072ff;
+}
+
+.work {
+  color:#ddd;
+  font-size:14px;
+}
+
+.bio {
+  margin:15px 0;
+  line-height:1.7;
+  font-size:14px;
+}
+
+/* Button */
+button {
+  padding:12px;
+  border:none;
+  border-radius:12px;
+  background: linear-gradient(45deg,#00c6ff,#0072ff);
+  color:#fff;
+  cursor:pointer;
+  width:100%;
+  font-size:16px;
+  font-weight: bold;
+  transition:.3s;
+}
+
+button:hover {
+  transform:scale(1.02);
+}
+
+/* ABOUT */
+.about {
+  padding:40px 15px;
+  text-align:center;
+  background:#f4f6f9;
+}
+
+.info-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:15px;
+  max-width:800px;
+  margin:auto;
+}
+
+.card {
+  background:#fff;
+  padding:15px;
+  border-radius:12px;
+  box-shadow:0 5px 15px rgba(0,0,0,0.1);
+  transition:.3s;
+}
+
+.card:hover {
+  transform:translateY(-5px);
+}
+
+/* APP */
+.container {
+  background:#fff;
+  padding:20px;
+  border-radius:12px;
+  width:95%;
+  max-width:600px;
+  margin:20px auto;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* تنسيق أزرار الأقسام والإجابات لتكون واضحة جداً */
+#content button {
+  background:#f8f9fa;
+  color:#2d3748; /* لون خط داكن جداً وواضح */
+  margin:8px 0;
+  font-size: 18px; /* تكبير الخط */
+  font-weight: 700; /* خط عريض */
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+#content button:hover {
+  background:#e2e8f0;
+}
+
+/* ألوان الإجابات الصحيحة والخاطئة واضحة للعين */
+.correct {
+  background:#28a745 !important; 
+  color:#fff !important;
+  border-color: #28a745 !important;
+}
+.wrong {
+  background:#dc3545 !important; 
+  color:#fff !important;
+  border-color: #dc3545 !important;
+}
+
+.next-btn {background:#1e88e5;color:#fff; margin-top: 15px;}
+.back-btn {background:#6c757d;color:#fff; margin-top: 15px;}
+
+/* Animation */
+@keyframes fadeIn {
+  from {opacity:0; transform:translateY(20px);}
+  to {opacity:1; transform:translateY(0);}
+}
+
+/* Responsive */
+@media (max-width:480px){
+  .profile-img {
+    width:120px;
+    height:120px;
   }
-];
-
-const data = {
-  "المرحلة الابتدائية": primary,
-  "المرحلة الإعدادية": prep
-};
-
-let path=[],questions=[],index=0,score=0,answered=false;
-
-const title=document.getElementById("title");
-const content=document.getElementById("content");
-const nextBtn=document.getElementById("nextBtn");
-const backBtn=document.getElementById("backBtn");
-
-// عرض القوائم
-function showMenu(obj){
-  content.innerHTML="";
-  nextBtn.style.display="none";
-
-  Object.keys(obj).forEach(k=>{
-    const btn=document.createElement("button");
-    btn.textContent=k;
-    btn.onclick=()=>{path.push(k);navigate();};
-    content.appendChild(btn);
-  });
-}
-
-// التنقل
-function navigate(){
-  let current=data;
-  path.forEach(p=>current=current[p]);
-
-  title.textContent=path.join(" > ");
-
-  if(Array.isArray(current)) startQuiz(current);
-  else showMenu(current);
-}
-
-// رجوع
-backBtn.onclick=()=>{
-  path.pop();
-  navigate();
-};
-
-// بدء الاختبار
-function startQuiz(qs){
-  questions=qs;
-  index=0;
-  score=0;
-  loadQuestion();
-}
-
-// تحميل السؤال
-function loadQuestion(){
-  answered=false;
-  nextBtn.style.display="none";
-
-  const q=questions[index];
-  content.innerHTML=`<h3>${q.question}</h3>`;
-
-  q.answers.forEach((a,i)=>{
-    const btn=document.createElement("button");
-    btn.textContent=a;
-    btn.onclick=()=>selectAnswer(i);
-    content.appendChild(btn);
-  });
-}
-
-// اختيار الإجابة (🔥 أهم تعديل)
-function selectAnswer(i){
-  if(answered) return;
-  answered=true;
-
-  const correct=questions[index].correct;
-  const btns=document.querySelectorAll("#content button");
-
-  btns.forEach((b,idx)=>{
-    if(idx===correct){
-      b.classList.add("correct");
-    } 
-    if(idx===i && i!==correct){
-      b.classList.add("wrong");
-    }
-    b.disabled=true;
-  });
-
-  if(i===correct){
-    score++;
-
-    // انتقال تلقائي
-    setTimeout(()=>{
-      nextQuestion();
-    },800);
-
-  } else {
-    // إظهار زر التالي عند الخطأ
-    nextBtn.style.display="block";
+  .bio {
+    font-size:13px;
+  }
+  #content button {
+    font-size: 16px;
   }
 }
-
-// الانتقال
-function nextQuestion(){
-  index++;
-
-  if(index<questions.length){
-    loadQuestion();
-  } else {
-    content.innerHTML=`<h3>النتيجة: ${score} / ${questions.length}</h3>`;
-    nextBtn.style.display="none";
-  }
-}
-
-// زر التالي
-nextBtn.onclick=()=>{
-  nextQuestion();
-};
-
-showMenu(data);
