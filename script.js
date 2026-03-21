@@ -48,7 +48,7 @@ const prep = {
   "الصف الثالث": createUnits()
 };
 
-// ✅ إضافة الأسئلة فقط هنا (تم حذف العنوان الفرعي وإضافة بنك الأسئلة الشامل)
+// ✅ إضافة الأسئلة فقط هنا 
 primary["الصف الرابع"]["الوحدة الأولى"]["مراجعة"] = [
     // --- النص الشعري ---
     { question: 'مضاد كلمة "الوجود"', answers: ["الحياة", "البقاء", "العدم"], correct: 2 },
@@ -189,7 +189,7 @@ const backBtn = document.getElementById("backBtn");
 // عرض القوائم
 function showMenu(obj){
   content.innerHTML="";
-  nextBtn.style.display="none";
+  nextBtn.style.display="none"; // إخفاء زر التالي في القوائم
 
   const keys = Object.keys(obj);
 
@@ -247,7 +247,7 @@ function startQuiz(qs){
 // تحميل سؤال
 function loadQuestion(){
   answered = false;
-  nextBtn.style.display = "block";
+  nextBtn.style.display = "none"; // تأكيد إخفاء زر التالي لأننا سننتقل تلقائياً
 
   const q = questions[index];
 
@@ -263,7 +263,7 @@ function loadQuestion(){
   });
 }
 
-// اختيار الإجابة
+// اختيار الإجابة والانتقال التلقائي
 function selectAnswer(i){
   if(answered) return;
 
@@ -274,29 +274,35 @@ function selectAnswer(i){
 
   btns.forEach((b,idx)=>{
     if(idx === correct){
-      b.classList.add("correct");
+      b.classList.add("correct"); // تلوين الإجابة الصحيحة بالأخضر دائماً
     } else if(idx === i){
-      b.classList.add("wrong");
+      b.classList.add("wrong"); // تلوين إجابة الطالب بالأحمر إذا كانت خاطئة
     }
-    b.disabled = true;
+    b.disabled = true; // تعطيل الأزرار بعد الاختيار
   });
 
-  if(i === correct) score++;
+  if(i === correct) {
+    score++;
+    // إذا كانت الإجابة صحيحة، ينتقل للسؤال التالي بعد ثانية واحدة
+    setTimeout(goToNextQuestion, 1000);
+  } else {
+    // إذا كانت الإجابة خاطئة، ينتظر ثانية ونصف ليرى الطالب الإجابة الصحيحة ثم ينتقل
+    setTimeout(goToNextQuestion, 1500);
+  }
 }
 
-// زر التالي
-nextBtn.onclick = () => {
-  if(!answered) return;
-
+// دالة الانتقال للسؤال التالي
+function goToNextQuestion() {
   index++;
 
   if(index < questions.length){
     loadQuestion();
   } else {
-    content.innerHTML = `<h3>النتيجة: ${score} / ${questions.length}</h3>`;
+    // عرض النتيجة النهائية
+    content.innerHTML = `<h3>النتيجة النهائية: ${score} من ${questions.length}</h3>`;
     nextBtn.style.display = "none";
   }
-};
+}
 
 // بدء التطبيق
 showMenu(data);
