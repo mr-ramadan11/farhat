@@ -1,276 +1,20 @@
-هذا كود html
-
-<!DOCTYPE html>
-<html lang="ar">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>رمضان فرحات</title>
-<link rel="stylesheet" href="style.css">
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&family=Tajawal:wght@500;700;900&display=swap" rel="stylesheet">
-</head>
-<body>
-
-<section class="hero">
-  <div class="overlay"></div>
-  <div class="hero-content">
-    <img src="ramadan.jpg" class="profile-img">
-    <h1>رمضان فرحات</h1>
-    <h3>معلم لغة عربية</h3>
-    <p class="work">مدرسة الصقر للغات</p>
-    <p class="bio">
-      معلم لغة عربية متخصص في تبسيط المناهج وتقديم تجربة تعليمية حديثة تعتمد على الفهم والتفاعل.
-    </p>
-    <button onclick="startApp()">الدخول إلى المنصة</button>
-  </div>
-</section>
-
-<section class="about">
-  <h2>المعلومات المهنية</h2>
-  <div class="info-grid">
-    <div class="card">
-      <h4>الخبرات</h4>
-      <p>معلم سابق بمدرسة سان جوزيف الدولية - شرم الشيخ</p>
-    </div>
-    <div class="card">
-      <h4>المؤهل</h4>
-      <p>ليسانس - جامعة الأزهر (قسم اللغة العربية)</p>
-    </div>
-    <div class="card">
-      <h4>مؤهلات إضافية</h4>
-      <p>الدبلوم التربوي العام</p>
-    </div>
-  </div>
-</section>
-
-<div class="container" id="app" style="display:none;">
-  <h2 id="title">اختر القسم</h2>
-  <div id="content"></div>
-  
-  <div class="controls">
-    <button id="nextBtn" class="next-btn" style="display:none;">التالي</button>
-    <button id="backBtn" class="back-btn" style="display:none;">رجوع</button>
-    <button id="homeBtn" class="home-btn" style="display:none;">الصفحة الرئيسية</button>
-  </div>
-</div>
-
-<script src="script.js"></script>
-</body>
-</html>
-
-هذا كود CSS
-
-* {
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
-
-body {
-  font-family:"Tajawal","Cairo";
-}
-
-/* HERO */
-.hero {
-  position:relative;
-  height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  text-align:center;
-  color:#fff;
-  background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-}
-
-.overlay {
-  position:absolute;
-  width:100%;
-  height:100%;
-  background:rgba(0,0,0,0.5);
-}
-
-.hero-content {
-  position:relative;
-  z-index:2;
-  max-width:420px;
-  padding:15px;
-  animation:fadeIn 1s ease;
-}
-
-.profile-img {
-  width:150px;
-  height:150px;
-  border-radius:50%;
-  object-fit:cover;
-  border:4px solid #fff;
-  margin-bottom:15px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.4);
-}
-
-/* Typography */
-h1 {
-  font-size:clamp(24px,4vw,34px);
-  font-weight:800;
-}
-
-h2 {
-  color:#1e88e5;
-  margin-bottom:15px;
-  font-size:clamp(20px,3vw,26px);
-  font-weight: 800;
-}
-
-h3 {
-  font-size:clamp(18px,2.5vw,22px);
-  margin:10px 0;
-  color: #1a202c; 
-  font-weight: 700;
-}
-
-h4 {
-  color:#0072ff;
-}
-
-.work {
-  color:#ddd;
-  font-size:14px;
-}
-
-.bio {
-  margin:15px 0;
-  line-height:1.7;
-  font-size:14px;
-}
-
-/* Button */
-button {
-  padding:12px;
-  border:none;
-  border-radius:12px;
-  background: linear-gradient(45deg,#00c6ff,#0072ff);
-  color:#fff;
-  cursor:pointer;
-  width:100%;
-  font-size:16px;
-  font-weight: bold;
-  transition:.3s;
-}
-
-button:hover {
-  transform:scale(1.02);
-}
-
-/* ABOUT */
-.about {
-  padding:40px 15px;
-  text-align:center;
-  background:#f4f6f9;
-}
-
-.info-grid {
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:15px;
-  max-width:800px;
-  margin:auto;
-}
-
-.card {
-  background:#fff;
-  padding:15px;
-  border-radius:12px;
-  box-shadow:0 5px 15px rgba(0,0,0,0.1);
-  transition:.3s;
-}
-
-.card:hover {
-  transform:translateY(-5px);
-}
-
-/* APP */
-.container {
-  background:#fff;
-  padding:20px;
-  border-radius:12px;
-  width:95%;
-  max-width:600px;
-  margin:20px auto;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-
-/* تنسيق أزرار الأقسام والإجابات */
-#content button {
-  background:#f8f9fa;
-  color:#2d3748;
-  margin:8px 0;
-  font-size: 18px; 
-  font-weight: 700; 
-  border: 2px solid #e2e8f0;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
-
-#content button:hover {
-  background:#e2e8f0;
-}
-
-/* الألوان للإجابات */
-.correct {
-  background:#28a745 !important; 
-  color:#fff !important;
-  border-color: #28a745 !important;
-}
-.wrong {
-  background:#dc3545 !important; 
-  color:#fff !important;
-  border-color: #dc3545 !important;
-}
-
-/* حاوية أزرار التحكم السفلية */
-.controls {
-  display: flex;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-.next-btn {background:#1e88e5;color:#fff;}
-.back-btn {background:#6c757d;color:#fff;}
-.home-btn {background:#ff9800;color:#fff;} /* لون مميز لزر الرئيسية */
-
-/* Animation */
-@keyframes fadeIn {
-  from {opacity:0; transform:translateY(20px);}
-  to {opacity:1; transform:translateY(0);}
-}
-
-/* Responsive */
-@media (max-width:480px){
-  .profile-img {
-    width:120px;
-    height:120px;
-  }
-  .bio {
-    font-size:13px;
-  }
-  #content button {
-    font-size: 16px;
-  }
-  .controls {
-    flex-direction: column;
-  }
-}
-
-
-
-هذا كود // تشغيل التطبيق
+// تشغيل التطبيق
 function startApp(){
   document.querySelector(".hero").style.display="none";
   document.querySelector(".about").style.display="none";
   document.getElementById("app").style.display="block";
-  document.getElementById("homeBtn").style.display="block"; // إظهار زر الرئيسية
 }
 
-// 🔥 إنشاء الدروس داخل كل وحدة
+// زر الصفحة الرئيسية (يعمل في كل الحالات)
+document.getElementById("homeBtn").onclick = () => {
+  path = [];
+  document.getElementById("app").style.display = "none";
+  document.querySelector(".hero").style.display = "flex";
+  document.querySelector(".about").style.display = "block";
+  showMenu(data);
+};
+
+// الدروس
 function createLessons(){
   return {
     "درس استماع": {},
@@ -287,7 +31,6 @@ function createLessons(){
   };
 }
 
-// 🔥 إنشاء الوحدات
 function createUnits(){
   return {
     "الوحدة الأولى": createLessons(),
@@ -296,7 +39,6 @@ function createUnits(){
   };
 }
 
-// 🔥 المرحلة الابتدائية
 const primary = {
   "الصف الأول": createUnits(),
   "الصف الثاني": createUnits(),
@@ -306,293 +48,139 @@ const primary = {
   "الصف السادس": createUnits()
 };
 
-// 🔥 المرحلة الإعدادية
 const prep = {
   "الصف الأول": createUnits(),
   "الصف الثاني": createUnits(),
   "الصف الثالث": createUnits()
 };
 
-// ✅ إضافة الأسئلة الشاملة للمراجعة
+// الأسئلة
 primary["الصف الرابع"]["الوحدة الأولى"]["مراجعة"] = [
-    // --- النص الشعري ---
-    { question: 'مضاد كلمة "الوجود"', answers: ["الحياة", "البقاء", "العدم"], correct: 2 },
-    { question: 'المراد بـ "قائمون" في النص', answers: ["نائمون", "جالسون", "مستمرون في رعايتها"], correct: 2 },
-    { question: 'الكلمات (الفنون - الأولون) لها نهايات متماثلة تعطي:', answers: ["تضاداً", "جرساً موسيقياً يطرب الأذن", "ترادفاً"], correct: 1 },
-    { question: 'تعبير "مصرُ لنا" يدل على:', answers: ["حب الشاعر لوطنه واعتزازه به", "خوف الشاعر", "حزن الشاعر"], correct: 0 },
-    { question: '"مصرُ انهضي" تعبير مجازي يصور مصر بـ:', answers: ["طائر يطير", "إنسان ينهض ويتقدم", "سفينة تبحر"], correct: 1 },
-    { question: 'ما نوع الأسلوب في "مصر انهضي":', answers: ["أمر", "استفهام", "تأكيد"], correct: 0 },
-    { question: '"أمُ العلومِ والفنون" تعبير مجازي يصور مصر بـ:', answers: ["الأم في عطائها", "المعلم", "المدرسة"], correct: 0 },
-    { question: '"إنا عليها قائمون" أسلوب مؤكد بـ:', answers: ["إنَّ", "قد", "لقد"], correct: 0 },
-    { question: '"نفتديها أجمعين" تعبير جميل يدل على:', answers: ["حب مصر والتضحية من أجلها", "السفر للخارج", "انتظار المقابل"], correct: 0 },
-    { question: '"فيها حيينا مكرمين" تعبير جميل يدل على:', answers: ["فضل مصر على أبنائها", "قسوة الحياة", "الغربة"], correct: 0 },
-    { question: 'التضاد بين "الوجود" و "العدم" يفيد:', answers: ["تقليل المعنى", "إخفاء المعنى", "توضيح المعنى وتأكيده"], correct: 2 },
-    { question: '"هي الحمى وهي الحرم" تعبير جميل يدل على:', answers: ["قدسية أرض مصر", "اتساع أرض مصر", "جمال النيل"], correct: 0 },
-    { question: 'واجبنا تجاه عهود وطننا كما فهمت من النص:', answers: ["أن ننساها", "أن نرعاها ونحفظها", "أن نتجاهلها"], correct: 1 },
-    { question: 'يدعو الشاعر مصر في البيت الأول إلى:', answers: ["التوقف", "التقدم كما كانت", "التراجع"], correct: 1 },
-    { question: 'الغرض من دعوة الشاعر لمصر بالنهوض هو:', answers: ["ليبقى علمها عالياً مرفوعاً", "لتزيد مساحتها", "لقل ثرواتها"], correct: 0 },
-    { question: 'الأجداد الأوائل لمصر كانوا:', answers: ["أصحاب مكانة ضعيفة", "أصحاب مكانة كبيرة سادوا بها", "لا يهتمون بالعلم"], correct: 1 },
-    { question: 'كيف نستطيع أن نكون سادة مثل أجدادنا؟', answers: ["بالكسل", "بالعمل بإخلاص", "بكثرة الكلام"], correct: 1 },
-    { question: 'مصر توفر لأبنائها كما جاء في الأبيات:', answers: ["الخوف", "الحياة الكريمة والأمن", "الفقر"], correct: 1 },
-    { question: '"نعلوا بها إلى السماء" تعبير يدل على:', answers: ["الرغبة في الطيران", "الطموح والسمو بمكانة الوطن", "النظر للسماء"], correct: 1 },
-    { question: 'معنى "سادَ" في النص:', answers: ["شرب", "قادَ وعَظُمَ", "سارَ"], correct: 1 },
-    { question: 'مضاد "الوفاء":', answers: ["الإخلاص", "الغدر والخيانة", "الحب"], correct: 1 },
-    { question: 'المراد بـ "الأولون":', answers: ["السابقون", "اللاحقون", "الأعداء"], correct: 0 },
-    { question: 'تكرار كلمة "مصر" في الأبيات يدل على:', answers: ["شدة حب الشاعر لها", "الكراهية", "الابتعاد عن مصر"], correct: 0 },
-    { question: 'معنى "ترعى":', answers: ["تهمل", "تحفظ وتهتم بـ", "تترك"], correct: 1 },
-    { question: 'مضاد "مكرمين":', answers: ["مهانين", "معززين", "فرحين"], correct: 0 },
-    { question: '"مصر أولى بالفداء" تعني أنها:', answers: ["أحق بالتضحية", "لا تحتاج تضحية", "أبعد عن التضحية"], correct: 0 },
-    { question: 'معنى "ندين":', answers: ["نأخذ ديناً", "نعترف ونلتزم", "نرفض"], correct: 1 },
-    { question: 'من قائل النص مصر لنا منذ القدم؟', answers: ["أحمد محرم", "أحمد شوقي", "حافظ إبراهيم"], correct: 0 },
-
-    // --- نص الاستماع ---
-    { question: 'لماذا شعر يوسف بالحزن عندما استيقظ متعباً ونصحه الطبيب بالراحة؟', answers: ["لأنه سيغيب عن رحلة عائلية.", "لأنه سيغيب عن المدرسة التي يحبها.", "لأنه لا يحب البقاء في سريره."], correct: 1 },
-    { question: 'مَن الذي زار يوسف في المساء؟', answers: ["صديقه أمجد.", "معلم الفصل.", "طبيب الأسرة."], correct: 0 },
-    { question: 'ما هو الهدف الأساسي من زيارة أمجد لصديقه المريض؟', answers: ["ليلعب معه ألعاب الفيديو الجديدة.", "ليطمئن عليه ويشرح له ما فاته من دروس.", "ليطلب منه المساعدة في واجباته."], correct: 1 },
-    { question: 'كيف استطاع أمجد أن يغير شعور يوسف من الحزن إلى السعادة؟', answers: ["من خلال شرح الدروس ومراجعة التمارين معه.", "عن طريق إخباره بقصص ومواقف مضحكة.", "بتقديم الحلوى والألعاب له."], correct: 0 },
-    { question: 'كيف كان يقضي الصديقان وقتهما بعد الانتهاء من مراجعة الدروس يومياً؟', answers: ["في مشاهدة البرامج التلفزيونية.", "في قراءة القصص المصورة.", "في لعب الشطرنج."], correct: 2 },
-    { question: 'ماذا كانت نتيجة يوسف في أول اختبار له بعد عودته إلى المدرسة؟', answers: ["حصل على درجات عالية.", "حصل على درجات متوسطة.", "لم يستطع الإجابة عن الأسئلة."], correct: 0 },
-    { question: 'لماذا تعجب المعلم من نتيجة يوسف في الاختبار؟', answers: ["لأن الاختبار كان صعباً جداً على جميع الطلاب.", "لأن يوسف كان غائباً ولم يتوقع المعلم هذا التفوق.", "لأن يوسف أجاب بسرعة كبيرة."], correct: 1 },
-    { question: 'ماذا قصد يوسف بجملة "نافذة اسمها الصداقة"؟', answers: ["أن غرفته بها نافذة حقيقية تطل على مدرسته.", "أن أمجد كان طريقه لمعرفة كل ما يحدث في المدرسة أثناء غيابه.", "أن المدرسة بها نوافذ كبيرة وجميلة."], correct: 1 },
-
-    // --- نص فكر قبل أن تنشر ---
-    { question: 'لماذا كانت الطفلة الصغيرة تبكي عندما تقترب الفراشات من شعرها؟', answers: ["لأنها كانت تخاف منها كثيراً.", "لأنها أرادت الإمساك بها ولم تستطع.", "لأن الفراشات كانت تزعجها بصوتها."], correct: 0 },
-    { question: 'كيف استطاعت الأم أن تحول خوف ابنتها من الفراشات إلى حب؟', answers: ["بإبعاد الفراشات عنها تماماً.", "بإخبارها بكلمات لطيفة أن الفراشات تقف فقط على الأشياء الجميلة مثل شعرها.", "بشراء لعبة جديدة على شكل فراشة."], correct: 1 },
-    { question: 'ما الصعوبة التي واجهت الطفل أثناء مشاركته في اليوم الرياضي؟', answers: ["الجري لمسافات طويلة.", "القفز فوق الحواجز.", "الالتقاط الكرة من زملائه."], correct: 1 },
-    { question: 'كيف تعامل أفراد الفريق مع زميلهم الذي لم يستطع القفز من المرة الأولى؟', answers: ["سخروا منه وتركوه وحده.", "غضبوا منه لأنه أخرهم عن الفوز.", "تجمعوا حوله وهتفوا له بكلمات تشجيعية."], correct: 2 },
-    { question: 'ماذا يجب عليك أن تفعل قبل أن تنشر منشوراً أو تكتب تعليقاً على وسائل التواصل الاجتماعي؟', answers: ["أن تفكر في تأثير كلماتك وتتأكد من صحة المعلومات.", "أن تكتب بسرعة لكي تكون أول المعلقين.", "أن تستخدم كلمات مضحكة حتى لو كانت تجرح من تقصده."], correct: 0 },
-    { question: 'بم شبه الكاتب الكلمة الطيبة في نهاية النص؟', answers: ["بالسيف الجارح.", "بالدواء الشافي.", "بالحاجز العالي."], correct: 1 },
-    { question: 'بالاستعانة بقائمة المفردات، ما المراد بعبارة "تُطْفِئُ بَرِيقَ قَلْبِهِ"؟', answers: ["تجعله يشعر بالنعاس الشديد.", "تحزنه", "تجعله ينسى ما كان يفعله."], correct: 1 },
-    { question: 'لماذا ينصحنا الكاتب باختيار كلماتنا بعناية شديدة؟', answers: ["لأن الكلمات الجميلة سهلة في الكتابة والقراءة.", "لأن الكلمة الطيبة قد تغير حياة إنسان للأفضل، بينما الجارحة تؤذيه.", "لكي نبدو أذكياء أمام أصدقائنا ومعلمينا."], correct: 1 },
-
-    // --- درس كلمات تبني وكلمات تهدم ---
-    { question: 'أين كان الأصدقاء يلعبون وقت الفسحة في درس "كلمات تبني وكلمات تهدم"؟', answers: ["في حديقة الحي", "في فناء المدرسة", "في الفصل الدراسي"], correct: 1 },
-    { question: 'في درس "كلمات تبني وكلمات تهدم"، ماذا فعل عمر عندما رأى صديقه يحمل حقيبته بطريقة غريبة؟', answers: ["ساعده في حمل الحقيبة لتخفيف العبء عنه", "بدأ يقلده بطريقة مضحكة", "تجاهله تماما وذهب ليلعب مع فريق آخر"], correct: 1 },
-    { question: 'ماذا سألت المعلمة عمر عندما لاحظت ما حدث في درس "كلمات تبني وكلمات تهدم"؟', answers: ["هل كنت تقصد أن تضحك معه أم أن تضحك عليه؟", "لماذا لم تحضر أدواتك المدرسية اليوم يا عمر؟", "من الذي بدأ بإثارة الفوضى في الفناء؟"], correct: 0 },
-    { question: 'بم أجاب عمر على سؤال المعلمة وهو يشعر بالخجل في درس "كلمات تبني وكلمات تهدم"؟', answers: ["أنه تعمد مضايقة صديقه أمام الجميع", "أنه كان يمزح معه فقط", "أنه لم يفعل شيئا وأن الأطفال ضحكوا بمفردهم"], correct: 1 },
-    { question: 'من هو "الشخص الذكي" كما وصفته المعلمة في درس "كلمات تبني وكلمات تهدم"؟', answers: ["الذي يسعد من حوله بتصرفاته", "الذي يحصل دائما على الدرجات النهائية في الاختبارات", "الذي يستطيع الجري أسرع من زملائه في الفناء"], correct: 0 },
-    { question: 'ماذا فعل عمر ليصلح خطأه مع صديقه في نهاية درس "كلمات تبني وكلمات تهدم"؟', answers: ["طلب من المعلمة أن تعتذر للصديق نيابة عنه", "اقترب منه، واعتذر له، وطلب أن يسامحه", "أعطى صديقه بعض الحلوى دون أن يتحدث معه"], correct: 1 },
-    { question: 'على ماذا اتفق الأصدقاء في نهاية درس "كلمات تبني وكلمات تهدم"؟', answers: ["أن الضحك الجميل هو الذي يسعد الجميع دون تنمر أو مضايقة", "ألا يضحكوا أو يمزحوا أبدا داخل المدرسة", "أن يقلدوا بعضهم البعض كل يوم في الفسحة"], correct: 0 },
-
-    // --- أسئلة الجملة الاسمية (المبتدأ والخبر) ---
-    { question: '"أصوات العصافير في الصباح الباكر لحن جميل". كلمة (أصوات) مبتدأ مرفوع بالضمة لأنه:', answers: ["جمع مؤنث سالم", "جمع تكسير", "مفرد"], correct: 1 },
-    { question: '"إلقاء القمامة في غير مكانها عمل قبيح". الخبر في الجملة السابقة هو:', answers: ["القمامة", "مكانها", "عمل"], correct: 2 },
-    { question: '"المساكين محتاجون إلى العطف والمساعدة دائما". كلمة (المساكين) مبتدأ مرفوع بالضمة لأنه:', answers: ["جمع مذكر سالم", "جمع تكسير", "مثنى"], correct: 1 },
-    { question: 'عثمان طالب متفوق في دراسته. المبتدأ في الجملة مرفوع وعلامة رفعه:', answers: ["الألف", "النون", "الضمة"], correct: 2 },
-    { question: '"أوقات الفراغ فرصة جيدة لتعلم مهارات جديدة". كلمة (أوقات) مبتدأ مرفوع بالضمة لأنه:', answers: ["جمع مؤنث سالم", "مفرد", "جمع تكسير"], correct: 2 },
-    { question: '"القاهرة مدينة عريقة ذات تاريخ طويل". الخبر في الجملة السابقة هو:', answers: ["مدينة", "عريقة", "تاريخ"], correct: 0 },
-    { question: '"ميادين العاصمة واسعة ومزدحمة بالسيارات". كلمة (ميادين) مبتدأ مرفوع بالضمة لأنه:', answers: ["جمع مذكر سالم", "مثنى", "جمع تكسير"], correct: 2 },
-    { question: '"أبيات القصيدة معبرة عن حب الوطن بصدق". كلمة (أبيات) مبتدأ مرفوع بالضمة لأنه:', answers: ["جمع مؤنث سالم", "جمع تكسير", "مفرد"], correct: 1 },
-    { question: '"بساتين الفاكهة المثمرة في القرية لوحة فنية". الخبر في الجملة السابقة هو:', answers: ["المثمرة", "القرية", "لوحة"], correct: 2 },
-    { question: '"الثعابين السامة خطيرة جدا على الإنسان في الصحراء". كلمة (الثعابين) مبتدأ مرفوع بالضمة لأنه:', answers: ["جمع مذكر سالم", "جمع تكسير", "مثنى"], correct: 1 },
-    { question: 'الطيران الحديث وسيلة سفر مريحة وسريعة. علامة رفع المبتدأ في الجملة هي:', answers: ["الألف", "النون", "الضمة"], correct: 2 },
-    { question: '"قوانين المرور الصارمة مهمة لسلامة الجميع". كلمة (قوانين) مبتدأ مرفوع بالضمة لأنه:', answers: ["جمع مذكر سالم", "جمع تكسير", "مثنى"], correct: 1 },
-    { question: '"الفلاحون النشيطون في الحقل متعاونون دائما". إعراب كلمة (متعاونون) هو:', answers: ["نعت مرفوع وعلامة رفعه الواو", "خبر مرفوع وعلامة رفعه الواو", "فاعل مرفوع وعلامة رفعه الواو"], correct: 1 },
-    { question: '"حمدان لاعب ماهر في فريق كرة القدم". كلمة (حمدان) مبتدأ مرفوع بالضمة لأنه:', answers: ["مثنى", "مفرد", "جمع تكسير"], correct: 1 },
-    { question: '"الشياطين أعداء الإنسان منذ بدء الخليقة". كلمة (الشياطين) مبتدأ مرفوع بالضمة لأنه:', answers: ["جمع مذكر سالم", "مثنى", "جمع تكسير"], correct: 2 },
-    { question: '"شجرة التفاح الكبيرة في حديقة جدتي مثمرة". الخبر في الجملة السابقة هو:', answers: ["الكبيرة", "حديقة", "مثمرة"], correct: 2 },
-    { question: '"أموات المسلمين في رحمة الله وفضله الواسع". كلمة (أموات) مبتدأ مرفوع بالضمة لأنه:', answers: ["جمع مؤنث سالم", "جمع تكسير", "مفرد"], correct: 1 },
-    { question: '"السلاطين في العصور القديمة حكام أقوياء". كلمة (السلاطين) مبتدأ مرفوع بالضمة لأنه:', answers: ["جمع مذكر سالم", "جمع تكسير", "مثنى"], correct: 1 },
-    { question: '"الفساتين الجديدة في المعرض رائعة جدا". كلمة (الفساتين) مبتدأ مرفوع بالضمة لأنه:', answers: ["جمع مذكر سالم", "مثنى", "جمع تكسير"], correct: 2 },
-    { question: '"الطالب المجتهد في دروسه طوال العام ناجح". الخبر في الجملة السابقة هو:', answers: ["المجتهد", "دروسه", "ناجح"], correct: 2 },
-
-    // --- أسئلة الجملة الفعلية (الفعل والفاعل) ---
-    { question: 'يشرح الدرس ببراعة واهتمام المعلم المتميز. الفاعل في الجملة السابقة هو:', answers: ["الدرس", "ببراعة", "المعلم"], correct: 2 },
-    { question: 'يعيش المساكين في ظروف صعبة ويحتاجون للمساعدة. الفاعل مرفوع وعلامة رفعه:', answers: ["الياء", "الواو", "الضمة"], correct: 2 },
-    { question: 'يحمي الوطن من الأعداء الطامعين جنود شجعان. الفاعل في الجملة هو:', answers: ["الوطن", "الأعداء", "جنود"], correct: 2 },
-    { question: 'مضت أوقات سعيدة في الرحلة المدرسية. الفاعل مرفوع وعلامة رفعه الضمة لأنه:', answers: ["مثنى", "جمع تكسير", "مفرد"], correct: 1 },
-    { question: 'انتشرت الثعابين في الغابة الكثيفة بحثا عن الطعام. علامة رفع الفاعل هي:', answers: ["الياء", "الواو", "الضمة"], correct: 2 },
-    { question: 'نجح عثمان في الاختبار الصعب بجدارة وتفوق. الفاعل مرفوع وعلامة رفعه:', answers: ["الألف", "النون", "الضمة"], correct: 2 },
-    { question: 'يدافع عن حقوق المظلومين دائما المحاميان البارعان. الفاعل في الجملة هو:', answers: ["المحاميان", "المظلومين", "حقوق"], correct: 0 },
-    { question: 'تزينت الميادين بالأعلام الملونة احتفالا بالعيد. علامة رفع الفاعل هي:', answers: ["الياء", "الواو", "الضمة"], correct: 2 },
-    { question: 'سحرت أبيات القصيدة جميع الحاضرين في الحفل. الفاعل "أبيات" مرفوع وعلامة رفعه الضمة لأنه:', answers: ["مفرد", "جمع تكسير", "جمع مؤنث سالم"], correct: 1 },
-    { question: 'تفوق الطلاب المجتهدون في الامتحانات. الفاعل في الجملة هو:', answers: ["الامتحانات", "الطلاب", "المجتهدون"], correct: 1 },
-    { question: 'طار الطيران في السماء الصافية بمهارة عالية. الفاعل مرفوع وعلامة رفعه:', answers: ["الألف", "الضمة", "النون"], correct: 1 },
-    { question: 'يحكم السلاطين بلادهم بالعدل والحكمة. علامة رفع الفاعل هي:', answers: ["الياء", "الواو", "الضمة"], correct: 2 },
-    { question: 'ارتفعت أصوات الجماهير في المدرجات لتشجيع الفريق. الفاعل مرفوع وعلامة رفعه:', answers: ["الألف", "الضمة", "الواو"], correct: 1 },
-    { question: 'فاز حمدان بالمركز الأول في مسابقة الجري السريع. علامة رفع الفاعل هي:', answers: ["الألف", "الضمة", "النون"], correct: 1 },
-    { question: 'تسهر على راحة المرضى ليلا الممرضات المخلصات. الفاعل في الجملة هو:', answers: ["راحة", "المرضى", "الممرضات"], correct: 2 },
-    { question: 'امتلأ الميدان بالناس في يوم العطلة الرسمية. علامة رفع الفاعل هي:', answers: ["الألف", "الضمة", "النون"], correct: 1 },
-    { question: 'يحب قراءة القصص الخيالية والمغامرات الطفل الذكي. الفاعل في الجملة هو:', answers: ["قراءة", "القصص", "الطفل"], correct: 2 },
-    { question: 'ظهرت الشياطين في القصة المرعبة بشكل مخيف. علامة رفع الفاعل هي:', answers: ["الياء", "الواو", "الضمة"], correct: 2 },
-    { question: 'استقبل الضيوف في الحفل الكبير المضيفون بترحاب. الفاعل "المضيفون" مرفوع وعلامة رفعه:', answers: ["الواو", "الضمة", "النون"], correct: 0 },
-    { question: 'اشتركت الطالبات المتميزات في المسابقة. علامة رفع الفاعل هي:', answers: ["الألف", "الكسرة", "الضمة"], correct: 2 },
-    { question: 'تغرد العصافير فوق أغصان الأشجار العالية. الفاعل مرفوع وعلامة رفعه:', answers: ["الياء", "الواو", "الضمة"], correct: 2 },
-
-    // --- الألف اللينة في الأسماء ---
-    { question: 'توكأ جدي على ...... غليظة أثناء مشيه في الحديقة.', answers: ["عصى", "عصا", "عصاء"], correct: 1 },
-    { question: 'كرم مدير المدرسة الطالب ...... لتفوقه في المسابقة.', answers: ["مصطفا", "مصطفي", "مصطفى"], correct: 2 },
-    { question: 'ناقش المحامي ...... مهمة جدا في ساحة المحكمة.', answers: ["قضايا", "قضايى", "قضائي"], correct: 0 },
-    { question: 'صديقتي ...... تحب ممارسة الرياضة كل صباح.', answers: ["هدا", "هدى", "هدي"], correct: 1 },
-    { question: 'سافر السائحون إلى ...... للاستمتاع بمعالمها السياحية.', answers: ["فرنسى", "فرنسا", "فرنسي"], correct: 1 },
-    { question: 'رأيت ...... شجاعا يساعد رجلا مسنا في عبور الطريق.', answers: ["فتى", "فتا", "فتي"], correct: 0 },
-    { question: 'أرسل الله النبي ...... عليه السلام إلى فرعون.', answers: ["موسا", "موسى", "موسي"], correct: 1 },
-    { question: 'يعالج الطبيب الماهر الـ ...... بابتسامة واهتمام.', answers: ["مرضا", "مرضي", "مرضى"], correct: 2 },
-    { question: 'سأل المعلم الطلاب: ...... موعد بداية الاختبار النهائي؟', answers: ["متا", "متى", "متي"], correct: 1 },
-    { question: 'قدمت الإدارة ...... قيمة للأطفال في الـ ......', answers: ["هدايى / مستشفا", "هدايا / مستشفى", "هدايا / مستشفا"], correct: 1 }
+  {
+    question:"مضاد كلمة الوجود",
+    answers:["الحياة","البقاء","العدم"],
+    correct:2
+  },
+  {
+    question:"نوع الأسلوب في مصر انهضي",
+    answers:["أمر","استفهام","نفي"],
+    correct:0
+  }
 ];
 
-// 🔥 البيانات النهائية
 const data = {
   "المرحلة الابتدائية": primary,
   "المرحلة الإعدادية": prep
 };
 
-// 🧠 التحكم
-let path = [];
-let questions = [];
-let index = 0;
-let score = 0;
-let answered = false;
+let path=[],questions=[],index=0,score=0,answered=false;
 
-// عناصر الصفحة
-const title = document.getElementById("title");
-const content = document.getElementById("content");
-const nextBtn = document.getElementById("nextBtn");
-const backBtn = document.getElementById("backBtn");
-const homeBtn = document.getElementById("homeBtn");
-
-// زر الصفحة الرئيسية
-homeBtn.onclick = () => {
-  path = []; // تفريغ المسار
-  document.getElementById("app").style.display = "none";
-  document.querySelector(".hero").style.display = "flex";
-  document.querySelector(".about").style.display = "block";
-  showMenu(data); // إعادة تعيين القائمة
-};
+const title=document.getElementById("title");
+const content=document.getElementById("content");
+const nextBtn=document.getElementById("nextBtn");
+const backBtn=document.getElementById("backBtn");
 
 // عرض القوائم
 function showMenu(obj){
   content.innerHTML="";
   nextBtn.style.display="none";
 
-  const keys = Object.keys(obj);
-
-  if(keys.length === 0){
-    content.innerHTML="<p>لا يوجد محتوى بعد</p>";
-    return;
-  }
-
-  keys.forEach(k=>{
-    const btn = document.createElement("button");
-    btn.textContent = k;
-
-    btn.onclick = () => {
-      path.push(k);
-      navigate();
-    };
-
+  Object.keys(obj).forEach(k=>{
+    const btn=document.createElement("button");
+    btn.textContent=k;
+    btn.onclick=()=>{path.push(k);navigate();};
     content.appendChild(btn);
   });
 }
 
 // التنقل
 function navigate(){
-  let current = data;
+  let current=data;
+  path.forEach(p=>current=current[p]);
 
-  path.forEach(p => {
-    current = current[p];
-  });
+  title.textContent=path.join(" > ");
 
-  title.textContent = path.join(" > ");
-
-  if(Array.isArray(current)){
-    startQuiz(current);
-  } else {
-    showMenu(current);
-  }
-
-  backBtn.style.display = path.length ? "block" : "none";
+  if(Array.isArray(current)) startQuiz(current);
+  else showMenu(current);
 }
 
 // رجوع
-backBtn.onclick = () => {
+backBtn.onclick=()=>{
   path.pop();
   navigate();
 };
 
 // بدء الاختبار
 function startQuiz(qs){
-  questions = qs;
-  index = 0;
-  score = 0;
+  questions=qs;
+  index=0;
+  score=0;
   loadQuestion();
 }
 
-// تحميل سؤال
+// تحميل السؤال
 function loadQuestion(){
-  answered = false;
-  nextBtn.style.display = "none"; // إخفاء زر التالي في البداية
+  answered=false;
+  nextBtn.style.display="none";
 
-  const q = questions[index];
-
-  content.innerHTML = `<h3>${q.question}</h3>`;
+  const q=questions[index];
+  content.innerHTML=`<h3>${q.question}</h3>`;
 
   q.answers.forEach((a,i)=>{
-    const btn = document.createElement("button");
-    btn.textContent = a;
-
-    btn.onclick = () => selectAnswer(i);
-
+    const btn=document.createElement("button");
+    btn.textContent=a;
+    btn.onclick=()=>selectAnswer(i);
     content.appendChild(btn);
   });
 }
 
-// اختيار الإجابة
+// اختيار الإجابة (🔥 أهم تعديل)
 function selectAnswer(i){
   if(answered) return;
-  answered = true;
+  answered=true;
 
-  const correct = questions[index].correct;
-  const btns = document.querySelectorAll("#content button");
+  const correct=questions[index].correct;
+  const btns=document.querySelectorAll("#content button");
 
   btns.forEach((b,idx)=>{
-    if(idx === correct){
-      b.classList.add("correct"); // تلوين الإجابة الصحيحة بالأخضر
-    } else if(idx === i){
-      b.classList.add("wrong"); // تلوين إجابة الطالب بالأحمر إذا أخطأ
+    if(idx===correct){
+      b.classList.add("correct");
+    } 
+    if(idx===i && i!==correct){
+      b.classList.add("wrong");
     }
-    b.disabled = true; // تعطيل الأزرار
+    b.disabled=true;
   });
 
-  if(i === correct) {
+  if(i===correct){
     score++;
-    // انتقال تلقائي بعد الإجابة الصحيحة (بزمن قدره ثانية واحدة)
-    setTimeout(() => {
-      goToNextQuestion();
-    }, 1000);
+
+    // انتقال تلقائي
+    setTimeout(()=>{
+      nextQuestion();
+    },800);
+
   } else {
-    // إظهار زر "التالي" إذا كانت الإجابة خاطئة
-    nextBtn.style.display = "block";
+    // إظهار زر التالي عند الخطأ
+    nextBtn.style.display="block";
   }
 }
 
-// دالة الانتقال للسؤال التالي
-function goToNextQuestion() {
+// الانتقال
+function nextQuestion(){
   index++;
 
-  if(index < questions.length){
+  if(index<questions.length){
     loadQuestion();
   } else {
-    // عرض النتيجة النهائية
-    content.innerHTML = `<h3>النتيجة النهائية: ${score} من ${questions.length}</h3>`;
-    nextBtn.style.display = "none";
+    content.innerHTML=`<h3>النتيجة: ${score} / ${questions.length}</h3>`;
+    nextBtn.style.display="none";
   }
 }
 
-// زر التالي (يعمل فقط في حال ظهور الزر للإجابات الخاطئة)
-nextBtn.onclick = () => {
-  if(!answered) return;
-  goToNextQuestion();
+// زر التالي
+nextBtn.onclick=()=>{
+  nextQuestion();
 };
 
-// بدء التطبيق
 showMenu(data);
-
-أريد اضافات
-
-ضيف زر الرجوع الى  الصفحة الرئيسية يكون موجود في كل صفحة في الموقع 
-وعند الضغط على الإجابة الصيحة يظهر اللون الأخضر وينتقل تلقائي بدون الضغط على التالي 
-لكن عند الإجابة الخطأ يظهر اللونين لون الإجابة الصحيحة ولون الإجابة الخاطئة ولكن في هذه الحالة يضغط على زر التالي
-
-اكتب كل كود لوحده
