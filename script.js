@@ -202,6 +202,11 @@ Object.keys(prep).forEach(grade => {
     "مراجعة": {}
   };
 });
+// النهائي
+const data = {
+  "المرحلة الابتدائية": primary,
+  "المرحلة الإعدادية": prep
+};
 
 // 🧠 التحكم
 let path = [];
