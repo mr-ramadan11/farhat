@@ -262,7 +262,7 @@ function loadQuestion(){
 
   const q = questions[index];
 
-  content.innerHTML = `<h3>${q.question}</h3>`;
+  content.innerHTML = `<h3 class="question">${q.question}</h3>`;
 
   q.answers.forEach((a,i)=>{
     const btn = document.createElement("button");
