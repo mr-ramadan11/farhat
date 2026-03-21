@@ -566,8 +566,20 @@ const content = document.getElementById("content");
 const nextBtn = document.getElementById("nextBtn");
 const backBtn = document.getElementById("backBtn");
 const homeBtn = document.getElementById("homeBtn");
+const topWatermark = document.querySelector(".watermark-top");
+const lessonWatermark = document.querySelector(".watermark-lesson");
 
 homeBtn.onclick = backToHome;
+
+function setTopWatermarkVisibility(show){
+  if (!topWatermark) return;
+  topWatermark.classList.toggle("is-visible", show);
+}
+
+function setLessonWatermarkVisibility(show){
+  if (!lessonWatermark) return;
+  lessonWatermark.classList.toggle("is-visible", show);
+}
 
 function setActiveView(view){
   currentView = view;
@@ -575,6 +587,11 @@ function setActiveView(view){
   aboutPage.style.display = view === "about" ? "block" : "none";
   appContainer.style.display = view === "app" ? "block" : "none";
   homeBtn.style.display = view === "app" ? "block" : "none";
+  setTopWatermarkVisibility(view === "app");
+
+  if (view !== "app") {
+    setLessonWatermarkVisibility(false);
+  }
 }
 
 function getCurrentNode(pathToUse = path){
@@ -638,6 +655,7 @@ function navigate(){
     title.textContent = ROOT_TITLE;
     showMenu(data);
     backBtn.style.display = "none";
+    setLessonWatermarkVisibility(false);
     saveState();
     return;
   }
@@ -649,6 +667,7 @@ function navigate(){
   } else {
     quizTitle = "";
     showMenu(current);
+    setLessonWatermarkVisibility(false);
   }
 
   backBtn.style.display = path.length ? "block" : "none";
@@ -669,6 +688,7 @@ function startQuiz(qs){
   score = 0;
   answered = false;
   selectedAnswer = null;
+  setLessonWatermarkVisibility(true);
   loadQuestion();
 }
 
@@ -813,6 +833,7 @@ function restoreState(){
         quizTitle = "";
         showMenu(data);
         backBtn.style.display = "none";
+        setLessonWatermarkVisibility(false);
         saveState();
         return;
       }
@@ -824,6 +845,7 @@ function restoreState(){
       if (Array.isArray(current)) {
         questions = current;
         quizTitle = questions.quizTitle || "";
+        setLessonWatermarkVisibility(true);
         index = Number.isInteger(saved.index) ? Math.max(0, Math.min(saved.index, Math.max(questions.length - 1, 0))) : 0;
         score = Number.isInteger(saved.score) ? Math.max(0, saved.score) : 0;
         const wasAnswered = Boolean(saved.answered);
@@ -848,6 +870,7 @@ function restoreState(){
       } else {
         quizTitle = "";
         showMenu(current);
+        setLessonWatermarkVisibility(false);
       }
 
       saveState();
