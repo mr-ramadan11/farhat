@@ -1,9 +1,32 @@
-// تشغيل التطبيق
+﻿// تشغيل التطبيق
 function startApp(){
-  document.querySelector(".hero").style.display="none";
-  document.querySelector(".about").style.display="none";
-  document.getElementById("app").style.display="block";
-  document.getElementById("homeBtn").style.display="block"; // إظهار زر الرئيسية
+  path = [];
+  setActiveView("app");
+  title.textContent = ROOT_TITLE;
+  showMenu(data);
+  backBtn.style.display = "none";
+  nextBtn.style.display = "none";
+  saveState();
+}
+
+function openAboutPage(){
+  setActiveView("about");
+  saveState();
+}
+
+function backToHome(){
+  path = [];
+  questions = [];
+  index = 0;
+  score = 0;
+  answered = false;
+  selectedAnswer = null;
+  title.textContent = ROOT_TITLE;
+  showMenu(data);
+  backBtn.style.display = "none";
+  nextBtn.style.display = "none";
+  setActiveView("home");
+  saveState();
 }
 
 // 🔥 إنشاء الدروس داخل كل وحدة
@@ -203,47 +226,114 @@ Object.keys(prep).forEach(grade => {
   };
 });
 // النهائي
-const data = {
-  "المرحلة الابتدائية": primary,
-  "المرحلة الإعدادية": prep
+const baseData = {
+  "\u0627\u0644\u0645\u0631\u062d\u0644\u0629 \u0627\u0644\u0627\u0628\u062a\u062f\u0627\u0626\u064a\u0629": primary,
+  "\u0627\u0644\u0645\u0631\u062d\u0644\u0629 \u0627\u0644\u0625\u0639\u062f\u0627\u062f\u064a\u0629": prep
 };
 
-// 🧠 التحكم
+const TERM_ONE = "\u0627\u0644\u062a\u0631\u0645 \u0627\u0644\u0623\u0648\u0644";
+const TERM_TWO = "\u0627\u0644\u062a\u0631\u0645 \u0627\u0644\u062b\u0627\u0646\u064a";
+const ROOT_TITLE = "\u0627\u062e\u062a\u0631 \u0627\u0644\u0642\u0633\u0645";
+
+const data = {};
+
+Object.keys(baseData).forEach((stageKey, stageIndex) => {
+  const stageContent = baseData[stageKey];
+  const firstTerm = JSON.parse(JSON.stringify(stageContent));
+  const secondTerm = JSON.parse(JSON.stringify(stageContent));
+
+  // أسئلة مراجعة الصف الرابع الابتدائي موجودة في الترم الثاني فقط
+  if (stageIndex === 0) {
+    const gradeFourKey = Object.keys(firstTerm)[3];
+    if (gradeFourKey) {
+      const unitOneKey = Object.keys(firstTerm[gradeFourKey])[0];
+      if (unitOneKey) {
+        const unitOne = firstTerm[gradeFourKey][unitOneKey];
+        const reviewKey = Object.keys(unitOne).find((lessonKey) => Array.isArray(unitOne[lessonKey]));
+        if (reviewKey) {
+          unitOne[reviewKey] = {};
+        }
+      }
+    }
+  }
+
+  data[stageKey] = {
+    [TERM_ONE]: firstTerm,
+    [TERM_TWO]: secondTerm
+  };
+});
+
+// التحكم
 let path = [];
 let questions = [];
 let index = 0;
 let score = 0;
 let answered = false;
+let selectedAnswer = null;
+let currentView = "home";
+
+const STORAGE_KEY = "ramadan-edu-state-v2";
 
 // عناصر الصفحة
+const heroSection = document.querySelector(".hero");
+const aboutPage = document.getElementById("aboutPage");
+const appContainer = document.getElementById("app");
 const title = document.getElementById("title");
 const content = document.getElementById("content");
 const nextBtn = document.getElementById("nextBtn");
 const backBtn = document.getElementById("backBtn");
 const homeBtn = document.getElementById("homeBtn");
 
-// زر الصفحة الرئيسية
-homeBtn.onclick = () => {
-  path = []; // تفريغ المسار
-  document.getElementById("app").style.display = "none";
-  document.querySelector(".hero").style.display = "flex";
-  document.querySelector(".about").style.display = "block";
-  showMenu(data); // إعادة تعيين القائمة
-};
+homeBtn.onclick = backToHome;
+
+function setActiveView(view){
+  currentView = view;
+  heroSection.style.display = view === "home" ? "flex" : "none";
+  aboutPage.style.display = view === "about" ? "block" : "none";
+  appContainer.style.display = view === "app" ? "block" : "none";
+  homeBtn.style.display = view === "app" ? "block" : "none";
+}
+
+function getCurrentNode(pathToUse = path){
+  let current = data;
+
+  for (const key of pathToUse) {
+    if (!current || typeof current !== "object" || !(key in current)) {
+      return null;
+    }
+    current = current[key];
+  }
+
+  return current;
+}
+
+function saveState(){
+  const state = {
+    view: currentView,
+    path: [...path],
+    index,
+    score,
+    answered,
+    selectedAnswer,
+    finished: Array.isArray(questions) && questions.length > 0 && index >= questions.length
+  };
+
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
 
 // عرض القوائم
 function showMenu(obj){
-  content.innerHTML="";
-  nextBtn.style.display="none";
+  content.innerHTML = "";
+  nextBtn.style.display = "none";
 
   const keys = Object.keys(obj);
 
   if(keys.length === 0){
-    content.innerHTML="<p>لا يوجد محتوى بعد</p>";
+    content.innerHTML = "<p>لا يوجد محتوى بعد</p>";
     return;
   }
 
-  keys.forEach(k=>{
+  keys.forEach(k => {
     const btn = document.createElement("button");
     btn.textContent = k;
 
@@ -258,13 +348,18 @@ function showMenu(obj){
 
 // التنقل
 function navigate(){
-  let current = data;
+  const current = getCurrentNode();
 
-  path.forEach(p => {
-    current = current[p];
-  });
+  if (current === null) {
+    path = [];
+    title.textContent = ROOT_TITLE;
+    showMenu(data);
+    backBtn.style.display = "none";
+    saveState();
+    return;
+  }
 
-  title.textContent = path.join(" > ");
+  title.textContent = path.length ? path.join(" > ") : ROOT_TITLE;
 
   if(Array.isArray(current)){
     startQuiz(current);
@@ -273,6 +368,7 @@ function navigate(){
   }
 
   backBtn.style.display = path.length ? "block" : "none";
+  saveState();
 }
 
 // رجوع
@@ -286,19 +382,56 @@ function startQuiz(qs){
   questions = qs;
   index = 0;
   score = 0;
+  answered = false;
+  selectedAnswer = null;
   loadQuestion();
+}
+
+function renderAnsweredState(selectedIndex, forceNextButton = false){
+  const correct = questions[index].correct;
+  const btns = document.querySelectorAll("#content button");
+
+  btns.forEach((b,idx) => {
+    if(idx === correct){
+      b.classList.add("correct");
+    } else if(idx === selectedIndex){
+      b.classList.add("wrong");
+    }
+    b.disabled = true;
+  });
+
+  nextBtn.style.display = forceNextButton || selectedIndex !== correct ? "block" : "none";
 }
 
 // تحميل سؤال
 function loadQuestion(){
+  if (!questions.length) {
+    content.innerHTML = "<p>لا يوجد أسئلة بعد</p>";
+    nextBtn.style.display = "none";
+    saveState();
+    return;
+  }
+
+  if (index < 0) {
+    index = 0;
+  }
+
+  if (index >= questions.length) {
+    content.innerHTML = `<h3>النتيجة النهائية: ${score} من ${questions.length}</h3>`;
+    nextBtn.style.display = "none";
+    saveState();
+    return;
+  }
+
   answered = false;
-  nextBtn.style.display = "none"; // إخفاء زر التالي في البداية
+  selectedAnswer = null;
+  nextBtn.style.display = "none";
 
   const q = questions[index];
 
   content.innerHTML = `<h3 class="question">${q.question}</h3>`;
 
-  q.answers.forEach((a,i)=>{
+  q.answers.forEach((a,i) => {
     const btn = document.createElement("button");
     btn.textContent = a;
 
@@ -306,55 +439,132 @@ function loadQuestion(){
 
     content.appendChild(btn);
   });
+
+  saveState();
 }
 
 // اختيار الإجابة
 function selectAnswer(i){
   if(answered) return;
+
   answered = true;
+  selectedAnswer = i;
 
   const correct = questions[index].correct;
-  const btns = document.querySelectorAll("#content button");
-
-  btns.forEach((b,idx)=>{
-    if(idx === correct){
-      b.classList.add("correct"); // تلوين الإجابة الصحيحة بالأخضر
-    } else if(idx === i){
-      b.classList.add("wrong"); // تلوين إجابة الطالب بالأحمر إذا أخطأ
-    }
-    b.disabled = true; // تعطيل الأزرار
-  });
+  renderAnsweredState(i);
 
   if(i === correct) {
     score++;
-    // انتقال تلقائي بعد الإجابة الصحيحة (بزمن قدره ثانية واحدة)
+    saveState();
+
     setTimeout(() => {
       goToNextQuestion();
     }, 1000);
   } else {
-    // إظهار زر "التالي" إذا كانت الإجابة خاطئة
-    nextBtn.style.display = "block";
+    saveState();
   }
 }
 
 // دالة الانتقال للسؤال التالي
 function goToNextQuestion() {
   index++;
+  answered = false;
+  selectedAnswer = null;
 
   if(index < questions.length){
     loadQuestion();
   } else {
-    // عرض النتيجة النهائية
     content.innerHTML = `<h3>النتيجة النهائية: ${score} من ${questions.length}</h3>`;
     nextBtn.style.display = "none";
+    saveState();
   }
 }
 
-// زر التالي (يعمل فقط في حال ظهور الزر للإجابات الخاطئة)
+// زر التالي
 nextBtn.onclick = () => {
   if(!answered) return;
   goToNextQuestion();
 };
 
-// بدء التطبيق
-showMenu(data);
+function restoreState(){
+  // تجهيز التطبيق دائمًا من الجذر
+  title.textContent = ROOT_TITLE;
+  showMenu(data);
+  backBtn.style.display = "none";
+  nextBtn.style.display = "none";
+  setActiveView("home");
+
+  const rawState = localStorage.getItem(STORAGE_KEY);
+  if (!rawState) {
+    return;
+  }
+
+  try {
+    const saved = JSON.parse(rawState);
+
+    currentView = saved.view === "app" || saved.view === "about" ? saved.view : "home";
+    path = Array.isArray(saved.path) ? saved.path.filter((item) => typeof item === "string") : [];
+
+    while (path.length && getCurrentNode(path) === null) {
+      path.pop();
+    }
+
+    if (currentView === "about") {
+      setActiveView("about");
+      return;
+    }
+
+    if (currentView === "app") {
+      setActiveView("app");
+
+      if (!path.length) {
+        title.textContent = ROOT_TITLE;
+        showMenu(data);
+        backBtn.style.display = "none";
+        saveState();
+        return;
+      }
+
+      const current = getCurrentNode(path);
+      title.textContent = path.join(" > ");
+      backBtn.style.display = "block";
+
+      if (Array.isArray(current)) {
+        questions = current;
+        index = Number.isInteger(saved.index) ? Math.max(0, Math.min(saved.index, Math.max(questions.length - 1, 0))) : 0;
+        score = Number.isInteger(saved.score) ? Math.max(0, saved.score) : 0;
+        const wasAnswered = Boolean(saved.answered);
+        const savedSelectedAnswer = Number.isInteger(saved.selectedAnswer) ? saved.selectedAnswer : null;
+
+        if (!questions.length) {
+          content.innerHTML = "<p>لا يوجد أسئلة بعد</p>";
+          nextBtn.style.display = "none";
+        } else if (saved.finished) {
+          content.innerHTML = `<h3>النتيجة النهائية: ${score} من ${questions.length}</h3>`;
+          nextBtn.style.display = "none";
+        } else {
+          loadQuestion();
+          if (wasAnswered && savedSelectedAnswer !== null) {
+            answered = true;
+            selectedAnswer = savedSelectedAnswer;
+            renderAnsweredState(savedSelectedAnswer, true);
+          }
+        }
+      } else {
+        showMenu(current);
+      }
+
+      saveState();
+      return;
+    }
+
+    setActiveView("home");
+  } catch (error) {
+    localStorage.removeItem(STORAGE_KEY);
+    path = [];
+    setActiveView("home");
+  }
+}
+
+restoreState();
+
