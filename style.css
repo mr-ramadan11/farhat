@@ -1,222 +1,220 @@
-* {
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
+// تشغيل التطبيق
+function startApp(){
+  document.querySelector(".hero").style.display="none";
+  document.querySelector(".about").style.display="none";
+  document.getElementById("app").style.display="block";
+  document.getElementById("globalHomeBtn").style.display="block"; // إظهار زر الرئيسية العائم
 }
 
-body {
-  font-family:"Tajawal","Cairo", sans-serif;
+// 🔥 إنشاء الدروس داخل كل وحدة
+function createLessons(){
+  return {
+    "درس استماع": {},
+    "درس قراءة 1": {},
+    "درس نحو 1": {},
+    "درس قواعد إملاء": {},
+    "درس موضوع تعبير": {},
+    "درس قراءة 2": {},
+    "درس نحو 2": {},
+    "درس تطبيق على القواعد الإملاء": {},
+    "درس تطبيق على موضوع التعبير": {},
+    "النص الشعري": {},
+    "مراجعة": {}
+  };
 }
 
-/* زر الرئيسية العائم الثابت */
-.global-home-btn {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  background: #ff9800;
-  color: #fff;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-family: inherit;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-  z-index: 1000;
-  transition: 0.3s;
+// 🔥 إنشاء الوحدات
+function createUnits(){
+  return {
+    "الوحدة الأولى": createLessons(),
+    "الوحدة الثانية": createLessons(),
+    "الوحدة الثالثة": createLessons()
+  };
 }
 
-.global-home-btn:hover {
-  background: #e68a00;
-  transform: translateY(-2px);
-}
+// 🔥 المرحلة الابتدائية
+const primary = {
+  "الصف الأول": createUnits(),
+  "الصف الثاني": createUnits(),
+  "الصف الثالث": createUnits(),
+  "الصف الرابع": createUnits(),
+  "الصف الخامس": createUnits(),
+  "الصف السادس": createUnits()
+};
 
-/* HERO */
-.hero {
-  position:relative;
-  height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  text-align:center;
-  color:#fff;
-  background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-}
+// 🔥 المرحلة الإعدادية
+const prep = {
+  "الصف الأول": createUnits(),
+  "الصف الثاني": createUnits(),
+  "الصف الثالث": createUnits()
+};
 
-.overlay {
-  position:absolute;
-  width:100%;
-  height:100%;
-  background:rgba(0,0,0,0.5);
-}
+// ✅ إضافة الأسئلة (احتفظت بجزء منها كمثال، يرجى وضع كل أسئلتك هنا كما كانت في كودك الأصلي)
+primary["الصف الرابع"]["الوحدة الأولى"]["مراجعة"] = [
+    { question: 'مضاد كلمة "الوجود"', answers: ["الحياة", "البقاء", "العدم"], correct: 2 },
+    { question: 'المراد بـ "قائمون" في النص', answers: ["نائمون", "جالسون", "مستمرون في رعايتها"], correct: 2 },
+    // ... قم بلصق باقي الأسئلة الخاصة بك هنا ...
+    { question: 'تغرد العصافير فوق أغصان الأشجار العالية. الفاعل مرفوع وعلامة رفعه:', answers: ["الياء", "الواو", "الضمة"], correct: 2 }
+];
 
-.hero-content {
-  position:relative;
-  z-index:2;
-  max-width:420px;
-  padding:15px;
-  animation:fadeIn 1s ease;
-}
+// 🔥 البيانات النهائية
+const data = {
+  "المرحلة الابتدائية": primary,
+  "المرحلة الإعدادية": prep
+};
 
-.profile-img {
-  width:150px;
-  height:150px;
-  border-radius:50%;
-  object-fit:cover;
-  border:4px solid #fff;
-  margin-bottom:15px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.4);
-}
+// 🧠 التحكم
+let path = [];
+let questions = [];
+let index = 0;
+let score = 0;
+let answered = false;
 
-/* Typography */
-h1 {
-  font-size:clamp(24px,4vw,34px);
-  font-weight:800;
-}
+// عناصر الصفحة
+const title = document.getElementById("title");
+const content = document.getElementById("content");
+const nextBtn = document.getElementById("nextBtn");
+const backBtn = document.getElementById("backBtn");
+const globalHomeBtn = document.getElementById("globalHomeBtn");
 
-h2 {
-  color:#1e88e5;
-  margin-bottom:15px;
-  font-size:clamp(20px,3vw,26px);
-  font-weight: 800;
-}
+// زر الصفحة الرئيسية
+globalHomeBtn.onclick = () => {
+  path = []; // تفريغ المسار
+  document.getElementById("app").style.display = "none";
+  document.querySelector(".hero").style.display = "flex";
+  document.querySelector(".about").style.display = "block";
+  globalHomeBtn.style.display = "none"; // إخفاء زر الرئيسية عند العودة للصفحة الأم
+  showMenu(data); // إعادة تعيين القائمة
+};
 
-h3 {
-  font-size:clamp(18px,2.5vw,22px);
-  margin:10px 0;
-  color: #1a202c; 
-  font-weight: 700;
-}
+// عرض القوائم
+function showMenu(obj){
+  content.innerHTML="";
+  nextBtn.style.display="none";
 
-h4 {
-  color:#0072ff;
-}
+  const keys = Object.keys(obj);
 
-.work {
-  color:#ddd;
-  font-size:14px;
-}
-
-.bio {
-  margin:15px 0;
-  line-height:1.7;
-  font-size:14px;
-}
-
-/* Button */
-button {
-  padding:12px;
-  border:none;
-  border-radius:12px;
-  background: linear-gradient(45deg,#00c6ff,#0072ff);
-  color:#fff;
-  cursor:pointer;
-  width:100%;
-  font-size:16px;
-  font-weight: bold;
-  transition:.3s;
-}
-
-button:hover {
-  transform:scale(1.02);
-}
-
-/* ABOUT */
-.about {
-  padding:40px 15px;
-  text-align:center;
-  background:#f4f6f9;
-}
-
-.info-grid {
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:15px;
-  max-width:800px;
-  margin:auto;
-}
-
-.card {
-  background:#fff;
-  padding:15px;
-  border-radius:12px;
-  box-shadow:0 5px 15px rgba(0,0,0,0.1);
-  transition:.3s;
-}
-
-.card:hover {
-  transform:translateY(-5px);
-}
-
-/* APP */
-.container {
-  background:#fff;
-  padding:20px;
-  border-radius:12px;
-  width:95%;
-  max-width:600px;
-  margin:20px auto;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-
-/* تنسيق أزرار الأقسام والإجابات */
-#content button {
-  background:#f8f9fa;
-  color:#2d3748;
-  margin:8px 0;
-  font-size: 18px; 
-  font-weight: 700; 
-  border: 2px solid #e2e8f0;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
-
-#content button:hover {
-  background:#e2e8f0;
-}
-
-/* الألوان للإجابات */
-.correct {
-  background:#28a745 !important; 
-  color:#fff !important;
-  border-color: #28a745 !important;
-}
-.wrong {
-  background:#dc3545 !important; 
-  color:#fff !important;
-  border-color: #dc3545 !important;
-}
-
-/* حاوية أزرار التحكم السفلية */
-.controls {
-  display: flex;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-.next-btn {background:#1e88e5;color:#fff;}
-.back-btn {background:#6c757d;color:#fff;}
-
-/* Animation */
-@keyframes fadeIn {
-  from {opacity:0; transform:translateY(20px);}
-  to {opacity:1; transform:translateY(0);}
-}
-
-/* Responsive */
-@media (max-width:480px){
-  .profile-img {
-    width:120px;
-    height:120px;
+  if(keys.length === 0){
+    content.innerHTML="<p>لا يوجد محتوى بعد</p>";
+    return;
   }
-  .bio {
-    font-size:13px;
+
+  keys.forEach(k=>{
+    const btn = document.createElement("button");
+    btn.textContent = k;
+
+    btn.onclick = () => {
+      path.push(k);
+      navigate();
+    };
+
+    content.appendChild(btn);
+  });
+}
+
+// التنقل
+function navigate(){
+  let current = data;
+
+  path.forEach(p => {
+    current = current[p];
+  });
+
+  title.textContent = path.join(" > ");
+
+  if(Array.isArray(current)){
+    startQuiz(current);
+  } else {
+    showMenu(current);
   }
-  #content button {
-    font-size: 16px;
-  }
-  .controls {
-    flex-direction: column;
+
+  backBtn.style.display = path.length ? "block" : "none";
+}
+
+// رجوع
+backBtn.onclick = () => {
+  path.pop();
+  navigate();
+};
+
+// بدء الاختبار
+function startQuiz(qs){
+  questions = qs;
+  index = 0;
+  score = 0;
+  loadQuestion();
+}
+
+// تحميل سؤال
+function loadQuestion(){
+  answered = false;
+  nextBtn.style.display = "none"; // إخفاء زر التالي في البداية
+
+  const q = questions[index];
+
+  content.innerHTML = `<h3>${q.question}</h3>`;
+
+  q.answers.forEach((a,i)=>{
+    const btn = document.createElement("button");
+    btn.textContent = a;
+
+    btn.onclick = () => selectAnswer(i);
+
+    content.appendChild(btn);
+  });
+}
+
+// اختيار الإجابة
+function selectAnswer(i){
+  if(answered) return;
+  answered = true;
+
+  const correct = questions[index].correct;
+  const btns = document.querySelectorAll("#content button");
+
+  btns.forEach((b,idx)=>{
+    // تلوين الإجابة الصحيحة بالأخضر دائماً
+    if(idx === correct){
+      b.classList.add("correct"); 
+    } 
+    // تلوين إجابة الطالب بالأحمر فقط إذا كانت خاطئة
+    else if(idx === i && i !== correct){
+      b.classList.add("wrong"); 
+    }
+    b.disabled = true; // تعطيل الأزرار لمنع تغيير الإجابة
+  });
+
+  // التحقق من الإجابة لتحديد السلوك
+  if(i === correct) {
+    score++;
+    // انتقال تلقائي بعد الإجابة الصحيحة (بزمن قدره ثانية واحدة)
+    setTimeout(() => {
+      goToNextQuestion();
+    }, 1000);
+  } else {
+    // إظهار زر "التالي" لأن الإجابة خاطئة ليأخذ الطالب وقته في مراجعة الخطأ
+    nextBtn.style.display = "block";
   }
 }
+
+// دالة الانتقال للسؤال التالي
+function goToNextQuestion() {
+  index++;
+
+  if(index < questions.length){
+    loadQuestion();
+  } else {
+    // عرض النتيجة النهائية
+    content.innerHTML = `<h3>النتيجة النهائية: ${score} من ${questions.length}</h3>`;
+    nextBtn.style.display = "none";
+  }
+}
+
+// زر التالي (يعمل فقط في حال ظهور الزر للإجابات الخاطئة)
+nextBtn.onclick = () => {
+  if(!answered) return;
+  goToNextQuestion();
+};
+
+// بدء التطبيق
+showMenu(data);
