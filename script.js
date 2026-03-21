@@ -3,6 +3,7 @@ function startApp(){
   document.querySelector(".hero").style.display="none";
   document.querySelector(".about").style.display="none";
   document.getElementById("app").style.display="block";
+  document.getElementById("homeBtn").style.display="block"; // إظهار زر الرئيسية
 }
 
 // 🔥 إنشاء الدروس داخل كل وحدة
@@ -48,7 +49,7 @@ const prep = {
   "الصف الثالث": createUnits()
 };
 
-// ✅ إضافة الأسئلة فقط هنا 
+// ✅ إضافة الأسئلة الشاملة للمراجعة
 primary["الصف الرابع"]["الوحدة الأولى"]["مراجعة"] = [
     // --- النص الشعري ---
     { question: 'مضاد كلمة "الوجود"', answers: ["الحياة", "البقاء", "العدم"], correct: 2 },
@@ -93,7 +94,7 @@ primary["الصف الرابع"]["الوحدة الأولى"]["مراجعة"] = 
     // --- نص فكر قبل أن تنشر ---
     { question: 'لماذا كانت الطفلة الصغيرة تبكي عندما تقترب الفراشات من شعرها؟', answers: ["لأنها كانت تخاف منها كثيراً.", "لأنها أرادت الإمساك بها ولم تستطع.", "لأن الفراشات كانت تزعجها بصوتها."], correct: 0 },
     { question: 'كيف استطاعت الأم أن تحول خوف ابنتها من الفراشات إلى حب؟', answers: ["بإبعاد الفراشات عنها تماماً.", "بإخبارها بكلمات لطيفة أن الفراشات تقف فقط على الأشياء الجميلة مثل شعرها.", "بشراء لعبة جديدة على شكل فراشة."], correct: 1 },
-    { question: 'ما الصعوبة التي واجهت الطفل أثناء مشاركته في اليوم الرياضي؟', answers: ["الجري لمسافات طويلة.", "القفز فوق الحواجز.", "التقاط الكرة من زملائه."], correct: 1 },
+    { question: 'ما الصعوبة التي واجهت الطفل أثناء مشاركته في اليوم الرياضي؟', answers: ["الجري لمسافات طويلة.", "القفز فوق الحواجز.", "الالتقاط الكرة من زملائه."], correct: 1 },
     { question: 'كيف تعامل أفراد الفريق مع زميلهم الذي لم يستطع القفز من المرة الأولى؟', answers: ["سخروا منه وتركوه وحده.", "غضبوا منه لأنه أخرهم عن الفوز.", "تجمعوا حوله وهتفوا له بكلمات تشجيعية."], correct: 2 },
     { question: 'ماذا يجب عليك أن تفعل قبل أن تنشر منشوراً أو تكتب تعليقاً على وسائل التواصل الاجتماعي؟', answers: ["أن تفكر في تأثير كلماتك وتتأكد من صحة المعلومات.", "أن تكتب بسرعة لكي تكون أول المعلقين.", "أن تستخدم كلمات مضحكة حتى لو كانت تجرح من تقصده."], correct: 0 },
     { question: 'بم شبه الكاتب الكلمة الطيبة في نهاية النص؟', answers: ["بالسيف الجارح.", "بالدواء الشافي.", "بالحاجز العالي."], correct: 1 },
@@ -185,11 +186,21 @@ const title = document.getElementById("title");
 const content = document.getElementById("content");
 const nextBtn = document.getElementById("nextBtn");
 const backBtn = document.getElementById("backBtn");
+const homeBtn = document.getElementById("homeBtn");
+
+// زر الصفحة الرئيسية
+homeBtn.onclick = () => {
+  path = []; // تفريغ المسار
+  document.getElementById("app").style.display = "none";
+  document.querySelector(".hero").style.display = "flex";
+  document.querySelector(".about").style.display = "block";
+  showMenu(data); // إعادة تعيين القائمة
+};
 
 // عرض القوائم
 function showMenu(obj){
   content.innerHTML="";
-  nextBtn.style.display="none"; // إخفاء زر التالي في القوائم
+  nextBtn.style.display="none";
 
   const keys = Object.keys(obj);
 
@@ -247,7 +258,7 @@ function startQuiz(qs){
 // تحميل سؤال
 function loadQuestion(){
   answered = false;
-  nextBtn.style.display = "none"; // تأكيد إخفاء زر التالي لأننا سننتقل تلقائياً
+  nextBtn.style.display = "none"; // إخفاء زر التالي في البداية
 
   const q = questions[index];
 
@@ -263,10 +274,9 @@ function loadQuestion(){
   });
 }
 
-// اختيار الإجابة والانتقال التلقائي
+// اختيار الإجابة
 function selectAnswer(i){
   if(answered) return;
-
   answered = true;
 
   const correct = questions[index].correct;
@@ -274,20 +284,22 @@ function selectAnswer(i){
 
   btns.forEach((b,idx)=>{
     if(idx === correct){
-      b.classList.add("correct"); // تلوين الإجابة الصحيحة بالأخضر دائماً
+      b.classList.add("correct"); // تلوين الإجابة الصحيحة بالأخضر
     } else if(idx === i){
-      b.classList.add("wrong"); // تلوين إجابة الطالب بالأحمر إذا كانت خاطئة
+      b.classList.add("wrong"); // تلوين إجابة الطالب بالأحمر إذا أخطأ
     }
-    b.disabled = true; // تعطيل الأزرار بعد الاختيار
+    b.disabled = true; // تعطيل الأزرار
   });
 
   if(i === correct) {
     score++;
-    // إذا كانت الإجابة صحيحة، ينتقل للسؤال التالي بعد ثانية واحدة
-    setTimeout(goToNextQuestion, 1000);
+    // انتقال تلقائي بعد الإجابة الصحيحة (بزمن قدره ثانية واحدة)
+    setTimeout(() => {
+      goToNextQuestion();
+    }, 1000);
   } else {
-    // إذا كانت الإجابة خاطئة، ينتظر ثانية ونصف ليرى الطالب الإجابة الصحيحة ثم ينتقل
-    setTimeout(goToNextQuestion, 1500);
+    // إظهار زر "التالي" إذا كانت الإجابة خاطئة
+    nextBtn.style.display = "block";
   }
 }
 
@@ -303,6 +315,12 @@ function goToNextQuestion() {
     nextBtn.style.display = "none";
   }
 }
+
+// زر التالي (يعمل فقط في حال ظهور الزر للإجابات الخاطئة)
+nextBtn.onclick = () => {
+  if(!answered) return;
+  goToNextQuestion();
+};
 
 // بدء التطبيق
 showMenu(data);
