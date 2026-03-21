@@ -55,11 +55,14 @@ h2 {
   color:#1e88e5;
   margin-bottom:15px;
   font-size:clamp(20px,3vw,26px);
+  font-weight: 800;
 }
 
 h3 {
-  font-size:clamp(16px,2.5vw,20px);
-  margin:5px 0;
+  font-size:clamp(18px,2.5vw,22px);
+  margin:10px 0;
+  color: #1a202c; /* لون داكن وواضح للسؤال */
+  font-weight: 700;
 }
 
 h4 {
@@ -86,12 +89,13 @@ button {
   color:#fff;
   cursor:pointer;
   width:100%;
-  font-size:15px;
+  font-size:16px;
+  font-weight: bold;
   transition:.3s;
 }
 
 button:hover {
-  transform:scale(1.05);
+  transform:scale(1.02);
 }
 
 /* ABOUT */
@@ -124,23 +128,44 @@ button:hover {
 /* APP */
 .container {
   background:#fff;
-  padding:15px;
+  padding:20px;
   border-radius:12px;
   width:95%;
-  max-width:520px;
+  max-width:600px;
   margin:20px auto;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
+/* تنسيق أزرار الأقسام والإجابات لتكون واضحة جداً */
 #content button {
-  background:#eee;
-  margin:5px 0;
+  background:#f8f9fa;
+  color:#2d3748; /* لون خط داكن جداً وواضح */
+  margin:8px 0;
+  font-size: 18px; /* تكبير الخط */
+  font-weight: 700; /* خط عريض */
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-.correct {background:#4caf50;color:#fff;}
-.wrong {background:#f44336;color:#fff;}
+#content button:hover {
+  background:#e2e8f0;
+}
 
-.next-btn {background:#1e88e5;color:#fff;}
-.back-btn {background:#777;color:#fff;}
+/* ألوان الإجابات الصحيحة والخاطئة واضحة للعين */
+.correct {
+  background:#28a745 !important; 
+  color:#fff !important;
+  border-color: #28a745 !important;
+}
+.wrong {
+  background:#dc3545 !important; 
+  color:#fff !important;
+  border-color: #dc3545 !important;
+}
+
+.next-btn {background:#1e88e5;color:#fff; margin-top: 15px;}
+.back-btn {background:#6c757d;color:#fff; margin-top: 15px;}
 
 /* Animation */
 @keyframes fadeIn {
@@ -154,8 +179,10 @@ button:hover {
     width:120px;
     height:120px;
   }
-
   .bio {
     font-size:13px;
+  }
+  #content button {
+    font-size: 16px;
   }
 }
