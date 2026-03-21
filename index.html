@@ -9,7 +9,7 @@
 </head>
 <body>
 
-<section class="hero" id="heroSection">
+<section class="hero">
   <div class="overlay"></div>
   <div class="hero-content">
     <img src="ramadan.jpg" class="profile-img">
@@ -19,34 +19,27 @@
     <p class="bio">
       معلم لغة عربية متخصص في تبسيط المناهج وتقديم تجربة تعليمية حديثة تعتمد على الفهم والتفاعل.
     </p>
-    
-    <div class="hero-buttons">
-      <button onclick="startApp()">الدخول إلى المنصة</button>
-      <button class="info-btn" onclick="openInfoModal()">المعلومات المهنية</button>
-    </div>
+    <button onclick="startApp()">الدخول إلى المنصة</button>
   </div>
 </section>
 
-<div id="infoModal" class="modal">
-  <div class="modal-content">
-    <span class="close-btn" onclick="closeInfoModal()">&times;</span>
-    <h2>المعلومات المهنية</h2>
-    <div class="info-grid">
-      <div class="card">
-        <h4>الخبرات</h4>
-        <p>معلم سابق بمدرسة سان جوزيف الدولية - شرم الشيخ</p>
-      </div>
-      <div class="card">
-        <h4>المؤهل</h4>
-        <p>ليسانس - جامعة الأزهر (قسم اللغة العربية)</p>
-      </div>
-      <div class="card">
-        <h4>مؤهلات إضافية</h4>
-        <p>الدبلوم التربوي العام</p>
-      </div>
+<section class="about">
+  <h2>المعلومات المهنية</h2>
+  <div class="info-grid">
+    <div class="card">
+      <h4>الخبرات</h4>
+      <p>معلم سابق بمدرسة سان جوزيف الدولية - شرم الشيخ</p>
+    </div>
+    <div class="card">
+      <h4>المؤهل</h4>
+      <p>ليسانس - جامعة الأزهر (قسم اللغة العربية)</p>
+    </div>
+    <div class="card">
+      <h4>مؤهلات إضافية</h4>
+      <p>الدبلوم التربوي العام</p>
     </div>
   </div>
-</div>
+</section>
 
 <div class="container" id="app" style="display:none;">
   <h2 id="title">اختر القسم</h2>
