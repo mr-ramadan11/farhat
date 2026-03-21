@@ -3,6 +3,7 @@ function startApp(){
   document.querySelector(".hero").style.display="none";
   document.querySelector(".about").style.display="none";
   document.getElementById("app").style.display="block";
+  document.getElementById("homeBtn").style.display="block"; 
 }
 
 // 🔥 إنشاء الدروس داخل كل وحدة
@@ -48,7 +49,7 @@ const prep = {
   "الصف الثالث": createUnits()
 };
 
-// ✅ إضافة الأسئلة فقط هنا 
+// ✅ بنك الأسئلة الشامل
 primary["الصف الرابع"]["الوحدة الأولى"]["مراجعة"] = [
     // --- النص الشعري ---
     { question: 'مضاد كلمة "الوجود"', answers: ["الحياة", "البقاء", "العدم"], correct: 2 },
@@ -185,11 +186,21 @@ const title = document.getElementById("title");
 const content = document.getElementById("content");
 const nextBtn = document.getElementById("nextBtn");
 const backBtn = document.getElementById("backBtn");
+const homeBtn = document.getElementById("homeBtn");
+
+// زر الصفحة الرئيسية
+homeBtn.onclick = () => {
+  path = []; // تفريغ المسار للعودة إلى نقطة البداية
+  document.getElementById("app").style.display = "none";
+  document.querySelector(".hero").style.display = "flex";
+  document.querySelector(".about").style.display = "block";
+  navigate(); // استدعاء التنقل لتحديث العنوان وإخفاء زر الرجوع بشكل صحيح
+};
 
 // عرض القوائم
 function showMenu(obj){
   content.innerHTML="";
-  nextBtn.style.display="none"; // إخفاء زر التالي في القوائم
+  nextBtn.style.display="none";
 
   const keys = Object.keys(obj);
 
@@ -211,7 +222,7 @@ function showMenu(obj){
   });
 }
 
-// التنقل
+// التنقل وتحديث العنوان
 function navigate(){
   let current = data;
 
@@ -219,7 +230,8 @@ function navigate(){
     current = current[p];
   });
 
-  title.textContent = path.join(" > ");
+  // التأكد من وضع عنوان افتراضي عند الرجوع للرئيسية
+  title.textContent = path.length > 0 ? path.join(" > ") : "اختر القسم";
 
   if(Array.isArray(current)){
     startQuiz(current);
@@ -227,10 +239,11 @@ function navigate(){
     showMenu(current);
   }
 
+  // إخفاء زر الرجوع إذا كنا في الصفحة الرئيسية للقسم
   backBtn.style.display = path.length ? "block" : "none";
 }
 
-// رجوع
+// رجوع خطوة واحدة
 backBtn.onclick = () => {
   path.pop();
   navigate();
@@ -244,10 +257,10 @@ function startQuiz(qs){
   loadQuestion();
 }
 
-// تحميل سؤال
+// تحميل سؤال جديد
 function loadQuestion(){
   answered = false;
-  nextBtn.style.display = "none"; // تأكيد إخفاء زر التالي لأننا سننتقل تلقائياً
+  nextBtn.style.display = "none"; // إخفاء زر التالي حتى يجاوب الطالب
 
   const q = questions[index];
 
@@ -263,10 +276,9 @@ function loadQuestion(){
   });
 }
 
-// اختيار الإجابة والانتقال التلقائي
+// التفاعل عند اختيار الإجابة
 function selectAnswer(i){
   if(answered) return;
-
   answered = true;
 
   const correct = questions[index].correct;
@@ -274,35 +286,43 @@ function selectAnswer(i){
 
   btns.forEach((b,idx)=>{
     if(idx === correct){
-      b.classList.add("correct"); // تلوين الإجابة الصحيحة بالأخضر دائماً
+      b.classList.add("correct"); // الإجابة الصحيحة دائمًا تظهر بالأخضر
     } else if(idx === i){
-      b.classList.add("wrong"); // تلوين إجابة الطالب بالأحمر إذا كانت خاطئة
+      b.classList.add("wrong"); // اختيار الطالب يظهر بالأحمر إذا كان خاطئًا
     }
-    b.disabled = true; // تعطيل الأزرار بعد الاختيار
+    b.disabled = true; // منع اختيار إجابة أخرى
   });
 
   if(i === correct) {
     score++;
-    // إذا كانت الإجابة صحيحة، ينتقل للسؤال التالي بعد ثانية واحدة
-    setTimeout(goToNextQuestion, 1000);
+    // انتقال تلقائي بعد ثانية واحدة للإجابة الصحيحة
+    setTimeout(() => {
+      goToNextQuestion();
+    }, 1000);
   } else {
-    // إذا كانت الإجابة خاطئة، ينتظر ثانية ونصف ليرى الطالب الإجابة الصحيحة ثم ينتقل
-    setTimeout(goToNextQuestion, 1500);
+    // إظهار زر "التالي" إذا كانت الإجابة خاطئة لينتقل الطالب بنفسه
+    nextBtn.style.display = "block";
   }
 }
 
-// دالة الانتقال للسؤال التالي
+// دالة الانتقال للسؤال التالي أو عرض النتيجة
 function goToNextQuestion() {
   index++;
 
   if(index < questions.length){
     loadQuestion();
   } else {
-    // عرض النتيجة النهائية
+    // عرض النتيجة النهائية عند انتهاء الأسئلة
     content.innerHTML = `<h3>النتيجة النهائية: ${score} من ${questions.length}</h3>`;
     nextBtn.style.display = "none";
   }
 }
 
-// بدء التطبيق
+// زر التالي (يظهر فقط في الإجابات الخاطئة)
+nextBtn.onclick = () => {
+  if(!answered) return;
+  goToNextQuestion();
+};
+
+// تشغيل القائمة لأول مرة
 showMenu(data);
