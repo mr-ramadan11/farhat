@@ -5,7 +5,31 @@
 }
 
 body {
-  font-family:"Tajawal","Cairo";
+  font-family:"Tajawal","Cairo", sans-serif;
+}
+
+/* زر الرئيسية العائم الثابت */
+.global-home-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #ff9800;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+  z-index: 1000;
+  transition: 0.3s;
+}
+
+.global-home-btn:hover {
+  background: #e68a00;
+  transform: translateY(-2px);
 }
 
 /* HERO */
@@ -173,7 +197,6 @@ button:hover {
 
 .next-btn {background:#1e88e5;color:#fff;}
 .back-btn {background:#6c757d;color:#fff;}
-.home-btn {background:#ff9800;color:#fff;} /* لون مميز لزر الرئيسية */
 
 /* Animation */
 @keyframes fadeIn {
