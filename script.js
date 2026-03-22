@@ -1,5 +1,6 @@
 ﻿// تشغيل التطبيق
 function startApp(){
+  stopQuizTimer({ reset: true });
   path = [];
   quizTitle = "";
   setActiveView("app");
@@ -11,11 +12,13 @@ function startApp(){
 }
 
 function openAboutPage(){
+  stopQuizTimer({ reset: true });
   setActiveView("about");
   saveState();
 }
 
 function backToHome(){
+  stopQuizTimer({ reset: true });
   path = [];
   questions = [];
   quizTitle = "";
@@ -559,6 +562,9 @@ let currentView = "home";
 
 const STORAGE_KEY = "ramadan-edu-state-v2";
 let audioContext = null;
+let quizTimerStartedAt = null;
+let quizElapsedBeforeCurrentRun = 0;
+let quizTimerIntervalId = null;
 
 function getAudioContext() {
   const Ctx = window.AudioContext || window.webkitAudioContext;
@@ -667,6 +673,55 @@ function playWrongSound() {
   });
 }
 
+function formatElapsedTime(ms) {
+  const safeMs = Math.max(0, Math.floor(ms));
+  const totalSeconds = Math.floor(safeMs / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+}
+
+function getElapsedTimeMs() {
+  const runningElapsed = quizTimerStartedAt !== null ? (Date.now() - quizTimerStartedAt) : 0;
+  return quizElapsedBeforeCurrentRun + runningElapsed;
+}
+
+function clearQuizTimerInterval() {
+  if (quizTimerIntervalId !== null) {
+    clearInterval(quizTimerIntervalId);
+    quizTimerIntervalId = null;
+  }
+}
+
+function startQuizTimer({ reset = false } = {}) {
+  if (reset) {
+    quizElapsedBeforeCurrentRun = 0;
+    quizTimerStartedAt = null;
+  }
+
+  if (quizTimerStartedAt === null) {
+    quizTimerStartedAt = Date.now();
+  }
+
+  clearQuizTimerInterval();
+  quizTimerIntervalId = setInterval(() => {
+    updateQuizMetaUI();
+  }, 1000);
+}
+
+function stopQuizTimer({ reset = false } = {}) {
+  if (quizTimerStartedAt !== null) {
+    quizElapsedBeforeCurrentRun += Date.now() - quizTimerStartedAt;
+    quizTimerStartedAt = null;
+  }
+
+  clearQuizTimerInterval();
+
+  if (reset) {
+    quizElapsedBeforeCurrentRun = 0;
+  }
+}
+
 // عناصر الصفحة
 const heroSection = document.querySelector(".hero");
 const aboutPage = document.getElementById("aboutPage");
@@ -701,6 +756,7 @@ function setActiveView(view){
   setTopWatermarkVisibility(view === "app");
 
   if (view !== "app") {
+    stopQuizTimer({ reset: true });
     setLessonWatermarkVisibility(false);
   }
 }
@@ -745,6 +801,7 @@ function saveState(){
     score,
     answered,
     selectedAnswer,
+    elapsedTimeMs: getElapsedTimeMs(),
     finished: Array.isArray(questions) && questions.length > 0 && index >= questions.length
   };
 
@@ -781,6 +838,7 @@ function navigate(){
   const current = getCurrentNode();
 
   if (current === null) {
+    stopQuizTimer({ reset: true });
     path = [];
     title.textContent = ROOT_TITLE;
     showMenu(data);
@@ -795,6 +853,7 @@ function navigate(){
   if(Array.isArray(current)){
     startQuiz(current);
   } else {
+    stopQuizTimer({ reset: true });
     quizTitle = "";
     showMenu(current);
     setLessonWatermarkVisibility(false);
@@ -818,6 +877,7 @@ function startQuiz(qs){
   score = 0;
   answered = false;
   selectedAnswer = null;
+  startQuizTimer({ reset: true });
   title.textContent = QUIZ_STEP_TITLE;
   setLessonWatermarkVisibility(true);
   loadQuestion();
@@ -843,7 +903,8 @@ function renderAnsweredState(selectedIndex, forceNextButton = false){
 function getQuizMetaHtml() {
   const remainingQuestions = getRemainingQuestionsCount();
   const wrongCount = getWrongAnswersCount();
-  return `<div class="quiz-meta"><span class="meta-total">عدد الأسئلة: ${remainingQuestions}</span><span class="meta-correct">الإجابات الصحيحة: ${score}</span><span class="meta-wrong">الإجابات الخاطئة: ${wrongCount}</span></div>`;
+  const elapsed = formatElapsedTime(getElapsedTimeMs());
+  return `<div class="quiz-meta"><span class="meta-total">عدد الأسئلة: ${remainingQuestions}</span><span class="meta-correct">صحيحة: ${score}</span><span class="meta-wrong">خاطئة: ${wrongCount}</span><span class="meta-time">الوقت: ${elapsed}</span></div>`;
 }
 
 function updateQuizMetaUI() {
@@ -854,7 +915,8 @@ function updateQuizMetaUI() {
 
 function renderFinalResult() {
   const headingHtml = quizTitle ? `<h3 class="quiz-heading">${quizTitle}</h3>` : "";
-  content.innerHTML = `${headingHtml}${getQuizMetaHtml()}<h3 class="final-result">انتهت الأسئلة</h3>`;
+  const elapsed = formatElapsedTime(getElapsedTimeMs());
+  content.innerHTML = `${headingHtml}${getQuizMetaHtml()}<h3 class="final-result">مدة حل الأسئلة: ${elapsed}</h3>`;
 }
 
 // تحميل سؤال
@@ -935,6 +997,7 @@ function goToNextQuestion() {
   if(index < questions.length){
     loadQuestion();
   } else {
+    stopQuizTimer();
     renderFinalResult();
     nextBtn.style.display = "none";
     saveState();
@@ -963,6 +1026,8 @@ function restoreState(){
 
   try {
     const saved = JSON.parse(rawState);
+    stopQuizTimer({ reset: true });
+    quizElapsedBeforeCurrentRun = Number.isFinite(saved.elapsedTimeMs) ? Math.max(0, saved.elapsedTimeMs) : 0;
 
     currentView = saved.view === "app" || saved.view === "about" ? saved.view : "home";
     path = Array.isArray(saved.path) ? saved.path.filter((item) => typeof item === "string") : [];
@@ -985,6 +1050,7 @@ function restoreState(){
         quizTitle = "";
         showMenu(data);
         backBtn.style.display = "none";
+        stopQuizTimer({ reset: true });
         setLessonWatermarkVisibility(false);
         saveState();
         return;
@@ -1003,6 +1069,11 @@ function restoreState(){
         score = Number.isInteger(saved.score) ? Math.max(0, saved.score) : 0;
         const wasAnswered = Boolean(saved.answered);
         const savedSelectedAnswer = Number.isInteger(saved.selectedAnswer) ? saved.selectedAnswer : null;
+        if (saved.finished) {
+          stopQuizTimer();
+        } else {
+          startQuizTimer();
+        }
 
         if (!questions.length) {
           const headingHtml = quizTitle ? `<h3 class="quiz-heading">${quizTitle}</h3>` : "";
@@ -1020,6 +1091,7 @@ function restoreState(){
           }
         }
       } else {
+        stopQuizTimer({ reset: true });
         quizTitle = "";
         showMenu(current);
         setLessonWatermarkVisibility(false);

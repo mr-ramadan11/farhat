@@ -436,7 +436,7 @@ button {
 
 #content .quiz-meta {
   display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
+  grid-template-columns:repeat(4,minmax(0,1fr));
   gap:8px;
   margin-bottom:10px;
   align-items:stretch;
@@ -446,8 +446,8 @@ button {
   display:flex;
   align-items:center;
   justify-content:center;
-  padding:6px 10px;
-  font-size:clamp(10.5px,1.9vw,13px);
+  padding:6px 8px;
+  font-size:clamp(9.5px,1.6vw,12.5px);
   font-weight:700;
   text-align:center;
   line-height:1.35;
@@ -472,6 +472,12 @@ button {
   color:#991b1b;
   background:#fef2f2;
   border-color:#fecaca;
+}
+
+#content .quiz-meta .meta-time {
+  color:#92400e;
+  background:#fffbeb;
+  border-color:#fde68a;
 }
 
 #content .final-result {
@@ -585,6 +591,15 @@ button {
   .watermark-lesson {
     font-size:clamp(14px,4.8vw,18px);
     padding:7px 14px;
+  }
+
+  #content .quiz-meta {
+    gap:6px;
+  }
+
+  #content .quiz-meta span {
+    padding:5px 4px;
+    font-size:clamp(8.5px,2.45vw,10.5px);
   }
 
   .controls {
