@@ -788,7 +788,17 @@ let answered = false;
 let selectedAnswer = null;
 let currentView = "home";
 
-const STORAGE_KEY = "ramadan-edu-state-v2";
+const SESSION_STORAGE_KEY = "ramadan-edu-session-state-v1";
+const LEGACY_STORAGE_KEY = "ramadan-edu-state-v2";
+const URL_VIEW_PARAM = "v";
+const URL_STAGE_PARAM = "st";
+const URL_TERM_PARAM = "tm";
+const URL_GRADE_PARAM = "gr";
+const URL_UNIT_PARAM = "un";
+const URL_LESSON_PARAM = "ls";
+const URL_PATH_LEVEL_PARAMS = [URL_STAGE_PARAM, URL_TERM_PARAM, URL_GRADE_PARAM, URL_UNIT_PARAM, URL_LESSON_PARAM];
+const LEGACY_URL_VIEW_PARAM = "view";
+const LEGACY_URL_PATH_PARAM = "p";
 let audioContext = null;
 let quizTimerStartedAt = null;
 let quizElapsedBeforeCurrentRun = 0;
@@ -1021,7 +1031,179 @@ function getRemainingQuestionsCount() {
   return Math.max(0, questions.length - answeredCount);
 }
 
+function normalizePath(pathToUse = []) {
+  if (!Array.isArray(pathToUse)) return [];
+  return pathToUse.filter((item) => typeof item === "string" && item.length > 0);
+}
+
+function arePathsEqual(firstPath = [], secondPath = []) {
+  const safeFirst = normalizePath(firstPath);
+  const safeSecond = normalizePath(secondPath);
+  if (safeFirst.length !== safeSecond.length) return false;
+  return safeFirst.every((segment, idx) => segment === safeSecond[idx]);
+}
+
+function parsePositiveIndex(value) {
+  if (typeof value !== "string" || !/^\d+$/.test(value)) return null;
+  const parsed = Number(value);
+  if (!Number.isInteger(parsed) || parsed < 1) return null;
+  return parsed;
+}
+
+function decodePathFromCompactParams(params) {
+  const resolvedPath = [];
+
+  for (const levelParam of URL_PATH_LEVEL_PARAMS) {
+    if (!params.has(levelParam)) break;
+
+    const parsedIndex = parsePositiveIndex(params.get(levelParam));
+    if (parsedIndex === null) break;
+
+    const current = getCurrentNode(resolvedPath);
+    if (!current || typeof current !== "object" || Array.isArray(current)) break;
+
+    const keys = Object.keys(current);
+    const key = keys[parsedIndex - 1];
+    if (!key) break;
+
+    resolvedPath.push(key);
+  }
+
+  return resolvedPath;
+}
+
+function encodePathToCompactIndices(pathToUse = path) {
+  const safePath = normalizePath(pathToUse);
+  const encodedIndices = [];
+  const walkedPath = [];
+
+  for (const segment of safePath) {
+    const current = getCurrentNode(walkedPath);
+    if (!current || typeof current !== "object" || Array.isArray(current)) break;
+
+    const keys = Object.keys(current);
+    const segmentIndex = keys.indexOf(segment);
+    if (segmentIndex === -1) break;
+
+    encodedIndices.push(segmentIndex + 1);
+    walkedPath.push(segment);
+
+    if (encodedIndices.length >= URL_PATH_LEVEL_PARAMS.length) break;
+  }
+
+  return encodedIndices;
+}
+
+function readStateFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const hasCompactPathParam = URL_PATH_LEVEL_PARAMS.some((param) => params.has(param));
+  const hasLegacyPathParam = params.has(LEGACY_URL_PATH_PARAM);
+  const hasViewParam = params.has(URL_VIEW_PARAM) || params.has(LEGACY_URL_VIEW_PARAM);
+  const rawView = params.get(URL_VIEW_PARAM) || params.get(LEGACY_URL_VIEW_PARAM);
+
+  let safePath = [];
+  if (hasCompactPathParam) {
+    safePath = decodePathFromCompactParams(params);
+  } else if (hasLegacyPathParam) {
+    safePath = normalizePath(params.getAll(LEGACY_URL_PATH_PARAM));
+  }
+
+  const normalizedRawView = rawView === "a" ? "about" : rawView;
+  const safeView = normalizedRawView === "app" || normalizedRawView === "about" ? normalizedRawView : "home";
+
+  return {
+    hasExplicitState: hasViewParam || hasCompactPathParam || hasLegacyPathParam,
+    view: safePath.length ? "app" : safeView,
+    path: safePath
+  };
+}
+
+function syncUrlWithState({ view = currentView, pathToUse = path } = {}) {
+  const safeView = view === "app" || view === "about" ? view : "home";
+  const safePath = safeView === "app" ? normalizePath(pathToUse) : [];
+  const encodedPathIndices = safeView === "app" ? encodePathToCompactIndices(safePath) : [];
+  const url = new URL(window.location.href);
+
+  [URL_VIEW_PARAM, LEGACY_URL_VIEW_PARAM, LEGACY_URL_PATH_PARAM, ...URL_PATH_LEVEL_PARAMS].forEach((param) => {
+    url.searchParams.delete(param);
+  });
+
+  if (safeView === "about") {
+    url.searchParams.set(URL_VIEW_PARAM, "about");
+  } else if (safeView === "app") {
+    url.searchParams.set(URL_VIEW_PARAM, "app");
+    encodedPathIndices.forEach((value, idx) => {
+      const paramName = URL_PATH_LEVEL_PARAMS[idx];
+      if (!paramName) return;
+      url.searchParams.set(paramName, String(value));
+    });
+  }
+
+  const nextUrl = `${url.pathname}${url.search}`;
+  const currentUrl = `${window.location.pathname}${window.location.search}`;
+
+  if (nextUrl !== currentUrl) {
+    window.history.replaceState(null, "", nextUrl);
+  }
+}
+
+function restoreFromUrlState(urlState) {
+  stopQuizTimer({ reset: true });
+  quizElapsedBeforeCurrentRun = 0;
+
+  const safeView = urlState && (urlState.view === "app" || urlState.view === "about") ? urlState.view : "home";
+  const safePath = normalizePath(urlState && urlState.path ? urlState.path : []);
+
+  if (safeView === "about") {
+    path = [];
+    quizTitle = "";
+    setActiveView("about");
+    saveState();
+    return;
+  }
+
+  if (safeView === "app") {
+    setActiveView("app");
+    path = [...safePath];
+
+    while (path.length && getCurrentNode(path) === null) {
+      path.pop();
+    }
+
+    if (!path.length) {
+      title.textContent = ROOT_TITLE;
+      quizTitle = "";
+      showMenu(data);
+      backBtn.style.display = "none";
+      setLessonWatermarkVisibility(false);
+      saveState();
+      return;
+    }
+
+    const current = getCurrentNode(path);
+    title.textContent = getNavigationTitle(current);
+    backBtn.style.display = "block";
+
+    if (Array.isArray(current)) {
+      startQuiz(current);
+    } else {
+      quizTitle = "";
+      showMenu(current);
+      setLessonWatermarkVisibility(false);
+      saveState();
+    }
+    return;
+  }
+
+  path = [];
+  quizTitle = "";
+  setActiveView("home");
+  saveState();
+}
+
 function saveState(){
+  syncUrlWithState({ view: currentView, pathToUse: path });
+
   const state = {
     view: currentView,
     path: [...path],
@@ -1033,7 +1215,11 @@ function saveState(){
     finished: Array.isArray(questions) && questions.length > 0 && index >= questions.length
   };
 
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  try {
+    sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(state));
+  } catch (error) {
+    // تجاهل أخطاء التخزين المؤقت في المتصفح.
+  }
 }
 
 // عرض القوائم
@@ -1247,18 +1433,62 @@ function restoreState(){
   nextBtn.style.display = "none";
   setActiveView("home");
 
-  const rawState = localStorage.getItem(STORAGE_KEY);
+  try {
+    localStorage.removeItem(LEGACY_STORAGE_KEY);
+  } catch (error) {
+    // تجاهل أخطاء التخزين في المتصفح.
+  }
+
+  const navigationEntry = performance.getEntriesByType("navigation")[0];
+  const navigationType = navigationEntry && typeof navigationEntry.type === "string"
+    ? navigationEntry.type
+    : "navigate";
+  const isReload = navigationType === "reload";
+  const urlState = readStateFromUrl();
+
+  // في الدخول الجديد: تجاهل التخزين السابق، لكن احترم المسار الموجود داخل الرابط المنسوخ.
+  if (!isReload) {
+    sessionStorage.removeItem(SESSION_STORAGE_KEY);
+
+    if (urlState.hasExplicitState) {
+      restoreFromUrlState(urlState);
+      return;
+    }
+
+    path = [];
+    quizTitle = "";
+    setActiveView("home");
+    saveState();
+    return;
+  }
+
+  const rawState = sessionStorage.getItem(SESSION_STORAGE_KEY);
+
   if (!rawState) {
+    if (urlState.hasExplicitState) {
+      restoreFromUrlState(urlState);
+    }
     return;
   }
 
   try {
     const saved = JSON.parse(rawState);
+    const savedView = saved.view === "app" || saved.view === "about" ? saved.view : "home";
+    const savedPath = normalizePath(saved.path);
+
+    const shouldUseUrlState =
+      urlState.hasExplicitState &&
+      (urlState.view !== savedView || !arePathsEqual(urlState.path, savedPath));
+
+    if (shouldUseUrlState) {
+      restoreFromUrlState(urlState);
+      return;
+    }
+
     stopQuizTimer({ reset: true });
     quizElapsedBeforeCurrentRun = Number.isFinite(saved.elapsedTimeMs) ? Math.max(0, saved.elapsedTimeMs) : 0;
-
-    currentView = saved.view === "app" || saved.view === "about" ? saved.view : "home";
-    path = Array.isArray(saved.path) ? saved.path.filter((item) => typeof item === "string") : [];
+    currentView = savedView;
+    path = [...savedPath];
 
     while (path.length && getCurrentNode(path) === null) {
       path.pop();
@@ -1267,6 +1497,7 @@ function restoreState(){
     if (currentView === "about") {
       quizTitle = "";
       setActiveView("about");
+      saveState();
       return;
     }
 
@@ -1330,12 +1561,26 @@ function restoreState(){
     }
 
     setActiveView("home");
+    saveState();
   } catch (error) {
-    localStorage.removeItem(STORAGE_KEY);
+    sessionStorage.removeItem(SESSION_STORAGE_KEY);
     path = [];
+
+    if (urlState.hasExplicitState) {
+      restoreFromUrlState(urlState);
+      return;
+    }
+
     setActiveView("home");
+    saveState();
   }
 }
 
 restoreState();
+
+window.addEventListener("pageshow", (event) => {
+  if (!event.persisted) return;
+  sessionStorage.removeItem(SESSION_STORAGE_KEY);
+  backToHome();
+});
 
