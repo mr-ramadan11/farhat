@@ -797,7 +797,8 @@ const URL_GRADE_PARAM = "gr";
 const URL_UNIT_PARAM = "un";
 const URL_LESSON_PARAM = "ls";
 const URL_BRAND_PARAM = "nm";
-const URL_BRAND_VALUE = "أ/ رمضان فرحات";
+const URL_BRAND_VALUE = "a-ramadan-farhat";
+const URL_ROUTE_PARAM = "r";
 const URL_PATH_LEVEL_PARAMS = [URL_STAGE_PARAM, URL_TERM_PARAM, URL_GRADE_PARAM, URL_UNIT_PARAM, URL_LESSON_PARAM];
 const LEGACY_URL_VIEW_PARAM = "view";
 const LEGACY_URL_PATH_PARAM = "p";
@@ -1074,6 +1075,33 @@ function decodePathFromCompactParams(params) {
   return resolvedPath;
 }
 
+function decodePathFromRouteParam(routeValue) {
+  if (typeof routeValue !== "string" || !routeValue.length) return [];
+
+  const chunks = routeValue.split("-").filter(Boolean);
+  const resolvedPath = [];
+
+  for (let i = 0; i < chunks.length && i < URL_PATH_LEVEL_PARAMS.length; i++) {
+    const expectedPrefix = URL_PATH_LEVEL_PARAMS[i];
+    const chunk = chunks[i];
+    if (!chunk.startsWith(expectedPrefix)) break;
+
+    const parsedIndex = parsePositiveIndex(chunk.slice(expectedPrefix.length));
+    if (parsedIndex === null) break;
+
+    const current = getCurrentNode(resolvedPath);
+    if (!current || typeof current !== "object" || Array.isArray(current)) break;
+
+    const keys = Object.keys(current);
+    const key = keys[parsedIndex - 1];
+    if (!key) break;
+
+    resolvedPath.push(key);
+  }
+
+  return resolvedPath;
+}
+
 function encodePathToCompactIndices(pathToUse = path) {
   const safePath = normalizePath(pathToUse);
   const encodedIndices = [];
@@ -1098,13 +1126,16 @@ function encodePathToCompactIndices(pathToUse = path) {
 
 function readStateFromUrl() {
   const params = new URLSearchParams(window.location.search);
-  const hasCompactPathParam = URL_PATH_LEVEL_PARAMS.some((param) => params.has(param));
+  const hasRouteParam = params.has(URL_ROUTE_PARAM);
+  const hasCompactPathParam = hasRouteParam || URL_PATH_LEVEL_PARAMS.some((param) => params.has(param));
   const hasLegacyPathParam = params.has(LEGACY_URL_PATH_PARAM);
   const hasViewParam = params.has(URL_VIEW_PARAM) || params.has(LEGACY_URL_VIEW_PARAM);
   const rawView = params.get(URL_VIEW_PARAM) || params.get(LEGACY_URL_VIEW_PARAM);
 
   let safePath = [];
-  if (hasCompactPathParam) {
+  if (hasRouteParam) {
+    safePath = decodePathFromRouteParam(params.get(URL_ROUTE_PARAM));
+  } else if (hasCompactPathParam) {
     safePath = decodePathFromCompactParams(params);
   } else if (hasLegacyPathParam) {
     safePath = normalizePath(params.getAll(LEGACY_URL_PATH_PARAM));
@@ -1126,7 +1157,7 @@ function syncUrlWithState({ view = currentView, pathToUse = path } = {}) {
   const encodedPathIndices = safeView === "app" ? encodePathToCompactIndices(safePath) : [];
   const url = new URL(window.location.href);
 
-  [URL_VIEW_PARAM, LEGACY_URL_VIEW_PARAM, LEGACY_URL_PATH_PARAM, URL_BRAND_PARAM, ...URL_PATH_LEVEL_PARAMS].forEach((param) => {
+  [URL_VIEW_PARAM, LEGACY_URL_VIEW_PARAM, LEGACY_URL_PATH_PARAM, URL_BRAND_PARAM, URL_ROUTE_PARAM, ...URL_PATH_LEVEL_PARAMS].forEach((param) => {
     url.searchParams.delete(param);
   });
 
@@ -1135,12 +1166,14 @@ function syncUrlWithState({ view = currentView, pathToUse = path } = {}) {
   if (safeView === "about") {
     url.searchParams.set(URL_VIEW_PARAM, "about");
   } else if (safeView === "app") {
-    url.searchParams.set(URL_VIEW_PARAM, "app");
-    encodedPathIndices.forEach((value, idx) => {
-      const paramName = URL_PATH_LEVEL_PARAMS[idx];
-      if (!paramName) return;
-      url.searchParams.set(paramName, String(value));
-    });
+    if (!encodedPathIndices.length) {
+      url.searchParams.set(URL_VIEW_PARAM, "app");
+    } else {
+      const routeValue = encodedPathIndices
+        .map((value, idx) => `${URL_PATH_LEVEL_PARAMS[idx]}${value}`)
+        .join("-");
+      url.searchParams.set(URL_ROUTE_PARAM, routeValue);
+    }
   }
 
   const nextUrl = `${url.pathname}${url.search}`;
