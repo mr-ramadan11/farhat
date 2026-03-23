@@ -796,6 +796,8 @@ const URL_TERM_PARAM = "tm";
 const URL_GRADE_PARAM = "gr";
 const URL_UNIT_PARAM = "un";
 const URL_LESSON_PARAM = "ls";
+const URL_BRAND_PARAM = "nm";
+const URL_BRAND_VALUE = "أ/ رمضان فرحات";
 const URL_PATH_LEVEL_PARAMS = [URL_STAGE_PARAM, URL_TERM_PARAM, URL_GRADE_PARAM, URL_UNIT_PARAM, URL_LESSON_PARAM];
 const LEGACY_URL_VIEW_PARAM = "view";
 const LEGACY_URL_PATH_PARAM = "p";
@@ -1124,9 +1126,11 @@ function syncUrlWithState({ view = currentView, pathToUse = path } = {}) {
   const encodedPathIndices = safeView === "app" ? encodePathToCompactIndices(safePath) : [];
   const url = new URL(window.location.href);
 
-  [URL_VIEW_PARAM, LEGACY_URL_VIEW_PARAM, LEGACY_URL_PATH_PARAM, ...URL_PATH_LEVEL_PARAMS].forEach((param) => {
+  [URL_VIEW_PARAM, LEGACY_URL_VIEW_PARAM, LEGACY_URL_PATH_PARAM, URL_BRAND_PARAM, ...URL_PATH_LEVEL_PARAMS].forEach((param) => {
     url.searchParams.delete(param);
   });
+
+  url.searchParams.set(URL_BRAND_PARAM, URL_BRAND_VALUE);
 
   if (safeView === "about") {
     url.searchParams.set(URL_VIEW_PARAM, "about");
